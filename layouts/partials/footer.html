@@ -143,12 +143,10 @@
     }}
     {{ if $hasSovereignty }}
     <div class="site-footer__sovereignty">
-      {{/* Canary — check expiry for dot color */}}
+      {{/* Canary — link only, no status judgment */}}
       {{ with site.GetPage "/canary" }}
-        {{ $expires := time.AsTime .Params.expires }}
-        {{ $isValid := gt $expires now }}
         <a href="{{ .RelPermalink }}" class="sovereignty-badge">
-          <span class="sovereignty-badge__dot{{ if not $isValid }} sovereignty-badge__dot--expired{{ end }}"></span>
+          <span class="sovereignty-badge__dot"></span>
           {{ T "sovereigntyCanary" }}
         </a>
       {{ end }}

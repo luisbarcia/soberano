@@ -48,12 +48,8 @@ searchUnavailable: "Search index not available. Run the build pipeline to enable
 
 # Sovereignty
 canaryTitle: "Warrant Canary"
-canaryValid: "VALID"
-canaryExpired: "EXPIRED"
 canaryLastUpdate: "Last update"
 canaryExpiresOn: "Expires"
-canaryStatusValid: "No warrants, gag orders, or National Security Letters received."
-canaryStatusExpired: "This canary has expired. The statement has not been renewed."
 canaryProof: "Proof of contemporaneity"
 canaryBitcoinBlock: "Bitcoin block"
 pgpTitle: "PGP Public Key"

@@ -1125,30 +1125,6 @@ mark,
   max-width: var(--content-width);
 }
 
-.canary__status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.7rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  padding: 0.4rem 1rem;
-  border: 1px solid var(--border);
-  margin-bottom: 2rem;
-}
-
-.canary__status--valid {
-  color: var(--green);
-  border-color: var(--green-dim);
-  background: var(--green-dim);
-}
-
-.canary__status--expired {
-  color: var(--red);
-  border-color: var(--red-dim);
-  background: var(--red-dim);
-}
-
 .canary__meta {
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -1353,10 +1329,6 @@ a.sovereignty-badge:hover {
   border-radius: 50%;
   background: var(--green);
   flex-shrink: 0;
-}
-
-.sovereignty-badge__dot--expired {
-  background: var(--red);
 }
 
 /* ---------- CONTENT HASH ---------- */
