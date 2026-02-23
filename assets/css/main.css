@@ -1015,6 +1015,7 @@ mark,
 
 .status-dot--active { background: var(--green); }
 .status-dot--completed { background: var(--accent); }
+.status-dot--maintenance { background: var(--blue); }
 .status-dot--archived { background: var(--text-faint); }
 .status-dot--paused { background: var(--yellow); }
 

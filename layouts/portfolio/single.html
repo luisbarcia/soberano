@@ -48,6 +48,15 @@
   {{/* Project footer */}}
   <footer class="post-footer">
 
+    {{/* Project metadata — client, period, role */}}
+    {{ if or .Params.client .Params.period .Params.role }}
+    <div class="portfolio-meta">
+      {{ with .Params.role }}<span><span class="portfolio-meta__label">Role:</span> {{ . }}</span>{{ end }}
+      {{ with .Params.client }}<span><span class="portfolio-meta__label">Client:</span> {{ . }}</span>{{ end }}
+      {{ with .Params.period }}<span><span class="portfolio-meta__label">Period:</span> {{ . }}</span>{{ end }}
+    </div>
+    {{ end }}
+
     {{/* External links — plain action links */}}
     {{ with .Params.links }}
     <div class="portfolio-meta">
