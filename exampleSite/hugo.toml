@@ -142,7 +142,7 @@ disableHugoGeneratorInject = true
   # --- Crypto / PGP (optional) ---
   [params.crypto]
     pgp_fingerprint = "XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX"
-    # pgp_key_url = "/pgp/"
+    pgp_key_url = "/pgp/"
     # keyoxide_url = "https://keyoxide.org/FINGERPRINT"
 
   # --- Sovereignty features (optional) ---
