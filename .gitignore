@@ -23,3 +23,6 @@ exampleSite/resources/
 
 # Claude Code
 .claude/worktrees/
+
+# Internal docs (não subir pro GitHub)
+.docs/
