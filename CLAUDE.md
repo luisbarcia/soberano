@@ -15,7 +15,7 @@ Dark-first, cypherpunk-inspired Hugo theme for sovereign digital publishing. Mon
 - **JavaScript**: Vanilla JS via `js.Build` (ESBuild), no external libs
 - **Fonts**: Space Mono + Instrument Serif (self-hosted WOFF2)
 - **Search**: Pagefind integration
-- **i18n**: English + Portuguese (pt-BR)
+- **i18n**: English (extensible via i18n/ directory)
 - **Go Module**: `github.com/luisbarcia/soberano`
 
 ## Project Structure
@@ -25,7 +25,7 @@ soberano/                    # Theme root
 ├── assets/css/              # main.css (~1300 lines), syntax.css
 ├── assets/js/               # main.js, pagefind-loader.js
 ├── exampleSite/             # Demo site with hugo.toml config
-├── i18n/                    # en.yaml, pt-br.yaml
+├── i18n/                    # en.yaml
 ├── layouts/
 │   ├── _default/            # baseof, list, single, terms, canary, pgp, mirrors, nostr-json
 │   ├── _markup/             # Render hooks (images, links, headings, codeblocks)
@@ -187,7 +187,7 @@ Expose hooks for user customization without modifying theme files:
 - CSS uses custom properties (variables) defined in `:root`
 - Keep JS minimal — vanilla only, no frameworks
 - All fonts must remain self-hosted (WOFF2)
-- Maintain i18n parity between en.yaml and pt-br.yaml
+- All i18n strings are defined in en.yaml; add new language files as needed
 - Use semantic HTML and ARIA attributes for accessibility
 - Shortcodes: `axiom`, `manifesto`, `card`
 - Responsive images: use WebP with `picture` element and `srcset`

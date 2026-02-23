@@ -89,7 +89,7 @@ disableHugoGeneratorInject = true
   # Default Open Graph image (place in static/)
   og_image = "og-default.png"
   # Open Graph locale override (default: site language)
-  # og_locale = "pt_BR"
+  # og_locale = "en_US"
 
   # --- JSON-LD Person schema ---
   job_title = "Software Engineer"

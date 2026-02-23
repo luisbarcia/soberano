@@ -121,7 +121,7 @@ External links (open in new tab):
 
   # SEO
   og_image = "og-default.png"        # Default OG image (in static/)
-  # og_locale = "pt_BR"              # Override OG locale
+  # og_locale = "en_US"              # Override OG locale
 
   # JSON-LD (optional — enriches Person schema)
   # job_title = "Software Engineer"

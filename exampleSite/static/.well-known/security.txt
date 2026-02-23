@@ -13,7 +13,7 @@ Expires: 2027-01-01T00:00:00.000Z
 
 # Optional fields:
 # Encryption: https://example.com/pgp/
-# Preferred-Languages: en, pt-BR
+# Preferred-Languages: en
 # Canonical: https://example.com/.well-known/security.txt
 # Policy: https://example.com/security-policy/
 # Acknowledgments: https://example.com/hall-of-fame/
