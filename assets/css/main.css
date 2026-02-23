@@ -32,7 +32,7 @@
   font-family: 'Instrument Serif';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: optional;
   src: url('../fonts/instrument-serif-v5-latin-regular.woff2') format('woff2');
 }
 
@@ -40,7 +40,7 @@
   font-family: 'Instrument Serif';
   font-style: italic;
   font-weight: 400;
-  font-display: swap;
+  font-display: optional;
   src: url('../fonts/instrument-serif-v5-latin-italic.woff2') format('woff2');
 }
 
@@ -60,7 +60,7 @@
   --text: #e8e8e8;
   --text-dim: #888888;
   --text-muted: #858585;
-  --text-faint: #767676;
+  --text-faint: #8a8a8a;
   --green: #4ade80;
   --green-dim: #4ade8022;
   --red: #f87171;
@@ -84,9 +84,12 @@ html[data-system-fonts] {
 
 html {
   font-size: 15px;
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
 }
 
 body {
@@ -104,13 +107,15 @@ body {
 }
 
 /* ---------- NOISE OVERLAY ---------- */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 100;
+@media (hover: hover) {
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+  }
 }
 
 /* ---------- LINKS ---------- */
@@ -406,6 +411,7 @@ figcaption {
 
 /* JS hides the anchor and shows the button via main.js */
 .nav-toggle--js { display: none; }
+.hidden { display: none; }
 
 @media (max-width: 640px) {
   .nav-toggle--noscript { display: block; }
@@ -712,6 +718,7 @@ figcaption {
   align-items: baseline;
   text-decoration: none;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .post-item:hover {
@@ -1091,6 +1098,14 @@ mark,
 
 .mt-3 { margin-top: 2rem; }
 
+/* ---------- CONTENT VISIBILITY — skip rendering for off-screen items ---------- */
+.post-item,
+.card,
+.project-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 200px;
+}
+
 /* ---------- PRINT ---------- */
 @media print {
   body { background: white; color: black; font-size: 12pt; }
@@ -1126,7 +1141,6 @@ mark,
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
-  html { scroll-behavior: auto; }
 }
 
 /* ---------- HIGH CONTRAST ---------- */
@@ -1137,6 +1151,12 @@ mark,
     --text-faint: #999999;
     --border: #444444;
   }
+}
+
+/* ---------- FORCED COLORS (Windows High Contrast) ---------- */
+@media (forced-colors: active) {
+  .status-dot { forced-color-adjust: none; }
+  .skip-link { color: LinkText; }
 }
 
 /* ---------- ACCESSIBILITY ---------- */
@@ -1211,7 +1231,7 @@ button:focus-visible {
 .reading-progress__bar {
   height: 100%;
   background: var(--accent);
-  width: 0%;
+  width: var(--progress, 0%);
   transition: width 50ms linear;
 }
 
@@ -1246,10 +1266,7 @@ img.post-header__image {
 .taxonomy-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
 .taxonomy-tag { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
 
-/* ---------- POST LIST (updated) ---------- */
-.post-item {
-  position: relative;
-}
+/* ---------- POST LIST (link overlay pattern) ---------- */
 .post-item__link {
   display: contents;
   text-decoration: none;

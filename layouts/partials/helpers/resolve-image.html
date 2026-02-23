@@ -1,0 +1,23 @@
+{{/* layouts/partials/helpers/resolve-image.html */}}
+{{/* Resolves the OG/hero image URL for the current page.                      */}}
+{{/* Context: the current page (.).                                            */}}
+{{/* Returns: absolute URL string (or empty string if no image found).         */}}
+{{/* Priority: page bundle cover/og/hero → .Params.image → site og_image     */}}
+
+{{ $ogImg := "" }}
+{{ $heroImg := .Resources.GetMatch "cover.*" }}
+{{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "og.*" }}{{ end }}
+{{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "hero.*" }}{{ end }}
+{{ if $heroImg }}
+  {{ $processed := $heroImg.Fill "1200x630 webp q85" }}
+  {{ $ogImg = $processed.Permalink }}
+{{ else }}
+  {{ with .Params.image }}
+    {{ $ogImg = . | absURL }}
+  {{ else }}
+    {{ with site.Params.og_image }}
+      {{ $ogImg = . | absURL }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $ogImg }}

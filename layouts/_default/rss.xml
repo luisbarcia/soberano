@@ -6,22 +6,22 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>{{ if eq .Title .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} on {{ end }}{{ .Site.Title }}{{ end }}</title>
+    <title>{{ if eq .Title site.Title }}{{ site.Title }}{{ else }}{{ with .Title }}{{ . }} on {{ end }}{{ site.Title }}{{ end }}</title>
     <link>{{ .Permalink }}</link>
-    <description>{{ with .Description }}{{ . }}{{ else }}Recent content {{ if ne .Title .Site.Title }}{{ with .Title }}in {{ . }} {{ end }}{{ end }}on {{ .Site.Title }}{{ end }}</description>
-    {{- $privacyMode := .Site.Params.privacy.mode | default "standard" }}
+    <description>{{ with .Description }}{{ . }}{{ else }}Recent content {{ if ne .Title site.Title }}{{ with .Title }}in {{ . }} {{ end }}{{ end }}on {{ site.Title }}{{ end }}</description>
+    {{- $privacyMode := site.Params.privacy.mode | default "standard" }}
     {{- if eq $privacyMode "standard" }}
     <generator>Hugo -- gohugo.io</generator>
     {{- end }}
-    {{- with .Site.LanguageCode }}
+    {{- with site.LanguageCode }}
     <language>{{ . }}</language>
     {{- end }}
     {{- if ne $privacyMode "onion" }}
-    {{- with .Site.Params.author }}
-    <managingEditor>{{ . }}</managingEditor>
+    {{- with site.Params.social.email }}
+    <managingEditor>{{ . }} ({{ site.Params.author }})</managingEditor>
     {{- end }}
     {{- end }}
-    {{- with .Site.Copyright }}
+    {{- with site.Copyright }}
     <copyright>{{ . }}</copyright>
     {{- end }}
     {{- /* Page selection */}}
@@ -37,7 +37,7 @@
     {{- $pages = where $pages "Params.noindex" "!=" true }}
     {{- $pages = where $pages "Date.IsZero" false }}
     {{- /* Apply limit */}}
-    {{- $limit := .Site.Config.Services.RSS.Limit }}
+    {{- $limit := site.Config.Services.RSS.Limit }}
     {{- if ge $limit 1 }}
     {{- $pages = first $limit $pages }}
     {{- end }}

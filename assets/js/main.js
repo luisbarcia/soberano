@@ -9,8 +9,8 @@
   var nav = document.querySelector('.nav');
 
   if (noscriptToggle && jsToggle) {
-    noscriptToggle.style.display = 'none';
-    jsToggle.style.display = '';
+    noscriptToggle.classList.add('hidden');
+    jsToggle.classList.remove('hidden');
   }
 
   if (jsToggle && nav) {
@@ -74,7 +74,7 @@
       var scrollTop = window.scrollY;
       var docHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (docHeight > 0) {
-        progressBar.style.width = (scrollTop / docHeight * 100) + '%';
+        progressBar.style.setProperty('--progress', (scrollTop / docHeight * 100) + '%');
       }
     }, { passive: true });
   }

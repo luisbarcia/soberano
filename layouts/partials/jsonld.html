@@ -5,23 +5,8 @@
 
 {{ $privacyMode := site.Params.privacy.mode | default "standard" }}
 
-{{/* OG Image — passed from baseof via scratch or resolved here */}}
-{{ $ogImg := "" }}
-{{ $heroImg := .Resources.GetMatch "cover.*" }}
-{{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "og.*" }}{{ end }}
-{{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "hero.*" }}{{ end }}
-{{ if $heroImg }}
-  {{ $processed := $heroImg.Fill "1200x630 webp q85" }}
-  {{ $ogImg = $processed.Permalink }}
-{{ else }}
-  {{ with .Params.image }}
-    {{ $ogImg = . | absURL }}
-  {{ else }}
-    {{ with site.Params.og_image }}
-      {{ $ogImg = . | absURL }}
-    {{ end }}
-  {{ end }}
-{{ end }}
+{{/* OG Image — resolved via shared partial */}}
+{{ $ogImg := partialCached "helpers/resolve-image.html" . .RelPermalink }}
 
 {{/* Build sameAs array from social params (skip in onion mode) */}}
 {{ $sameAs := slice }}
@@ -94,7 +79,9 @@
   {{ $post = merge $post (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL)) }}
   {{ $post = merge $post (dict "publisher" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
 {{ end }}
-{{ with $ogImg }}{{ $post = merge $post (dict "image" .) }}{{ end }}
+{{ with $ogImg }}{{ $post = merge $post (dict "image" .) }}{{ else }}
+  {{ with site.Params.og_image }}{{ $post = merge $post (dict "image" (. | absURL)) }}{{ end }}
+{{ end }}
 {{ with .Description }}{{ $post = merge $post (dict "description" .) }}{{ end }}
 {{ with .Lastmod }}{{ $post = merge $post (dict "dateModified" (.Format "2006-01-02T15:04:05Z07:00")) }}{{ end }}
 {{ with .Params.tags }}{{ $post = merge $post (dict "keywords" .) }}{{ end }}

@@ -26,7 +26,7 @@
 
       {{ with .nostr }}
       <a href="https://njump.me/{{ . }}" target="_blank" rel="noopener noreferrer" title="Nostr">
-        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        {{ partial "icons/nostr.html" }}
         <span class="sr-only">Nostr</span>
       </a>
       {{ end }}
@@ -61,7 +61,7 @@
 
       {{ with .matrix }}
       <a href="https://matrix.to/#/{{ . }}" target="_blank" rel="noopener noreferrer" title="Matrix">
-        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 1h1v22h-1M22.5 1h-1v22h1"/><rect x="5" y="5" width="4" height="4" fill="currentColor"/><rect x="15" y="5" width="4" height="4" fill="currentColor"/><rect x="5" y="15" width="4" height="4" fill="currentColor"/><rect x="15" y="15" width="4" height="4" fill="currentColor"/></svg>
+        {{ partial "icons/matrix.html" }}
         <span class="sr-only">Matrix</span>
       </a>
       {{ end }}
@@ -73,13 +73,13 @@
     <nav class="site-footer__social" aria-label="Social links">
       {{ with .nostr }}
       <a href="https://njump.me/{{ . }}" target="_blank" rel="noopener noreferrer" title="Nostr">
-        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        {{ partial "icons/nostr.html" }}
         <span class="sr-only">Nostr</span>
       </a>
       {{ end }}
       {{ with .matrix }}
       <a href="https://matrix.to/#/{{ . }}" target="_blank" rel="noopener noreferrer" title="Matrix">
-        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 1h1v22h-1M22.5 1h-1v22h1"/><rect x="5" y="5" width="4" height="4" fill="currentColor"/><rect x="15" y="5" width="4" height="4" fill="currentColor"/><rect x="5" y="15" width="4" height="4" fill="currentColor"/><rect x="15" y="15" width="4" height="4" fill="currentColor"/></svg>
+        {{ partial "icons/matrix.html" }}
         <span class="sr-only">Matrix</span>
       </a>
       {{ end }}

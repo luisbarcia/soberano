@@ -5,12 +5,12 @@ Dark-first, cypherpunk-inspired Hugo theme for sovereign digital publishing. Mon
 
 **Site type:** Blog + Portfolio
 **CSS stack:** CSS puro (zero dependencies)
-**JS strategy:** Minimal (vanilla JS, ~78 lines)
+**JS strategy:** Minimal (vanilla JS, ~81 lines)
 **Dark mode:** Dark-only (single scheme)
 **Distribution:** Hugo Module
 
 ## Tech Stack
-- **Hugo** v0.128.0+ (standard edition, Go templates) — target upgrade to v0.156.0
+- **Hugo** v0.152.0+ (standard edition, Go templates) — target upgrade to v0.156.0
 - **CSS**: Pure CSS (no framework), dark-only palette, custom properties
 - **JavaScript**: Vanilla JS via `js.Build` (ESBuild), no external libs
 - **Fonts**: Space Mono + Instrument Serif (self-hosted WOFF2)
@@ -24,17 +24,16 @@ soberano/                    # Theme root
 ├── archetypes/              # Content templates (default, portfolio)
 ├── assets/css/              # main.css (~1300 lines), syntax.css
 ├── assets/js/               # main.js, pagefind-loader.js
-├── data/                    # Data files (currently empty)
 ├── exampleSite/             # Demo site with hugo.toml config
 ├── i18n/                    # en.yaml, pt-br.yaml
 ├── layouts/
 │   ├── _default/            # baseof, list, single, terms
-│   ├── _markup/             # Render hooks (images, links, headings)
+│   ├── _markup/             # Render hooks (images, links, headings, codeblocks)
 │   ├── partials/            # head/, header, footer, navigation, components/
 │   ├── portfolio/           # Portfolio section templates
 │   └── shortcodes/          # axiom, manifesto, card
+├── static/                  # favicon.svg, favicon.png, apple-touch-icon.png, og-default.png
 ├── static/fonts/            # WOFF2 font files
-├── static/images/           # Theme images
 ├── go.mod                   # Go module definition
 ├── theme.toml               # Theme metadata
 └── README.md                # Full documentation
@@ -178,6 +177,7 @@ Expose hooks for user customization without modifying theme files:
 - Shortcodes: `axiom`, `manifesto`, `card`
 - Responsive images: use WebP with `picture` element and `srcset`
 - JSON-LD structured data for SEO (WebSite, BlogPosting, CreativeWork, BreadcrumbList)
+- Code blocks use `render-codeblock.html` hook with `.Store.Set "hasCode"` pattern for conditional `syntax.css` loading
 - When using features that require a specific Hugo version, annotate: `{{/* Requires Hugo ≥ vX.Y.Z */}}`
 
 ## Git

@@ -30,23 +30,8 @@
   <meta http-equiv="x-dns-prefetch-control" content="off">
   {{ end }}
 
-  {{/* OG Image — resolve before OG/Twitter meta tags */}}
-  {{ $ogImg := "" }}
-  {{ $heroImg := .Resources.GetMatch "cover.*" }}
-  {{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "og.*" }}{{ end }}
-  {{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "hero.*" }}{{ end }}
-  {{ if $heroImg }}
-    {{ $processed := $heroImg.Fill "1200x630 webp q85" }}
-    {{ $ogImg = $processed.Permalink }}
-  {{ else }}
-    {{ with .Params.image }}
-      {{ $ogImg = . | absURL }}
-    {{ else }}
-      {{ with site.Params.og_image }}
-        {{ $ogImg = . | absURL }}
-      {{ end }}
-    {{ end }}
-  {{ end }}
+  {{/* OG Image — resolved via shared partial */}}
+  {{ $ogImg := partialCached "helpers/resolve-image.html" . .RelPermalink }}
 
   {{ if ne $privacyMode "onion" }}
   {{/* Open Graph */}}
@@ -68,6 +53,10 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="{{ $desc }}">
+  {{ if strings.HasSuffix . ".webp" }}<meta property="og:image:type" content="image/webp">
+  {{ else if strings.HasSuffix . ".png" }}<meta property="og:image:type" content="image/png">
+  {{ else if or (strings.HasSuffix . ".jpg") (strings.HasSuffix . ".jpeg") }}<meta property="og:image:type" content="image/jpeg">
+  {{ end }}
   {{ end }}
 
   {{/* Twitter Card */}}
