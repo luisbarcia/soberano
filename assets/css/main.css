@@ -518,6 +518,16 @@ figcaption {
   color: var(--text-faint);
 }
 
+.site-footer__theme-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.site-footer__theme-link:hover {
+  color: var(--accent);
+}
+
 .site-footer__pgp {
   text-align: center;
   margin-top: 0.5rem;
@@ -1178,8 +1188,6 @@ mark,
 /* ---------- HOME PAGE ---------- */
 .hero { margin-bottom: 4rem; position: relative; }
 .hero__desc { max-width: 560px; }
-.hero__nav { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.5rem; }
-.hero__nav a { text-decoration: none; }
 
 .home-section { margin: 3rem 0; }
 .home-section__more { margin-top: 1rem; }

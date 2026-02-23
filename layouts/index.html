@@ -12,17 +12,6 @@
   <p class="text-dim hero__desc">{{ . }}</p>
   {{ end }}
 
-  {{/* Hero quick links — from menu "hero" */}}
-  {{ with site.Menus.hero }}
-  <nav class="hero__nav" aria-label="Quick links">
-    {{ range . }}
-    <a href="{{ .URL | relURL }}" class="tag"
-       {{ if .Params.external }}target="_blank" rel="noopener noreferrer"{{ end }}>
-      {{ .Name }}
-    </a>
-    {{ end }}
-  </nav>
-  {{ end }}
 
 </header>
 

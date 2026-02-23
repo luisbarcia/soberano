@@ -101,14 +101,11 @@
     </nav>
     {{ end }}
 
-    {{/* Copyright row */}}
+    {{/* Copyright row — theme attribution always present */}}
     <div class="site-footer__inner">
       <span>
-        {{ with site.Params.footer_left }}{{ . | safeHTML }}{{ else }}{{ site.Title }} · {{ now.Year }}{{ end }}
+        <a class="site-footer__theme-link" href="https://github.com/luisbarcia/soberano" target="_blank" rel="noopener noreferrer">Soberano</a> · {{ now.Year }}
       </span>
-      {{ with site.Params.footer_right }}
-      <span>{{ . | safeHTML }}</span>
-      {{ end }}
     </div>
 
     {{ if ne $privacyMode "onion" }}

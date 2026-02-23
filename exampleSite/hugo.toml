@@ -56,17 +56,6 @@ enableRobotsTXT = true
   url = "/search/"
   weight = 4
 
-# Hero quick links (homepage, below hero text)
-[[menus.hero]]
-  name = "About"
-  url = "/about/"
-  weight = 1
-
-[[menus.hero]]
-  name = "Portfolio"
-  url = "/portfolio/"
-  weight = 2
-
 # Footer navigation
 [[menus.footer]]
   name = "Search"
@@ -132,8 +121,8 @@ enableRobotsTXT = true
     ]
 
   # --- Footer ---
-  footer_left = "Your Name · Powered by Hugo"
-  footer_right = "Built with <a href=\"https://github.com/luisbarcia/soberano\">Soberano</a>"
+  # footer_left = "Your Name · Powered by Hugo"
+  # footer_right = "Your custom right-side text"
 
   # --- Social links (footer + JSON-LD sameAs) ---
   [params.social]
