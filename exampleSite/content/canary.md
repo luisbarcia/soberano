@@ -8,6 +8,8 @@ bitcoin_block: 880000
 bitcoin_hash: "0000000000000000000234abc567def890123456789abcdef0123456789abcdef"
 ---
 
+<!-- Replace this entire code block with the output of: gpg --clearsign canary.txt -->
+
 ```
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
@@ -31,8 +33,11 @@ from any government agency or law enforcement body.
 This canary is updated quarterly. If it is not renewed by the
 expiration date, the absence of this statement should be
 interpreted accordingly.
-
 -----BEGIN PGP SIGNATURE-----
-(Replace with your actual gpg --clearsign output)
+
+iQIzBAEBCgAdFiEEaabbccdd11223344556677889900aabb
+ccddeeff00112233445566778899AABBCCDDEEFFaabbccdd
+eeff0011223344556677889900AABBCCDDEEFF00112233==
+=xK7f
 -----END PGP SIGNATURE-----
 ```
