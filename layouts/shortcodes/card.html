@@ -1,0 +1,16 @@
+{{/* layouts/shortcodes/card.html */}}
+{{/* Usage: {{< card number="01" title="Title" role="Category" >}}       */}}
+{{/*   Description text here.                                             */}}
+{{/* {{< /card >}}                                                        */}}
+{{/* Params: number (optional), title (required), role (optional)          */}}
+
+<div class="card" role="article">
+  <div class="card__header">
+    {{ with .Get "number" }}<span class="card__number">{{ . }}</span>{{ end }}
+    <span class="card__title">{{ .Get "title" }}</span>
+    {{ with .Get "role" }}<span class="card__meta">{{ . }}</span>{{ end }}
+  </div>
+  <div class="card__desc">
+    {{ .Inner | markdownify }}
+  </div>
+</div>

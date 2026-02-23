@@ -1,0 +1,25 @@
+{{/* layouts/404.html */}}
+{{/* 404 error page. Minimal — single link back to home. */}}
+
+{{ define "title" }}404 · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+<div class="error-page">
+
+  <h1 class="error-page__code">404</h1>
+
+  <div class="error-page__terminal">
+    <span class="error-page__accent">$ </span>curl -s {{ site.BaseURL | strings.TrimRight "/" }}/not-found<br>
+    <span class="error-page__accent">{{ T "errorNotFound" }}</span>
+  </div>
+
+  <p class="error-page__msg">
+    {{ T "errorNotFoundMsg" }}
+  </p>
+
+  <div class="error-page__actions">
+    <a href="{{ "/" | relURL }}" class="action-link">← {{ T "home" }}</a>
+  </div>
+
+</div>
+{{ end }}

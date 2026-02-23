@@ -1,0 +1,25 @@
+# Hugo
+public/
+resources/_gen/
+hugo_stats.json
+.hugo_build.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (Pagefind)
+node_modules/
+
+# ExampleSite build output
+exampleSite/public/
+exampleSite/resources/
+
+# Claude Code
+.claude/worktrees/

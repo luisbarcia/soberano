@@ -1,0 +1,19 @@
+{{/* taxonomy.html — Lists content for a single taxonomy term (e.g., posts tagged "go").
+     Context: .Page (taxonomy term page) */}}
+{{ define "title" }}{{ .Title }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<header class="post-header">
+  <span class="post-tag">[{{ T "tag" }}]</span>
+  <h1 class="post-header__title">{{ .Title }}</h1>
+  <p class="text-dim">{{ len .Pages }} {{ if eq (len .Pages) 1 }}{{ T "post" }}{{ else }}{{ T "posts" }}{{ end }}</p>
+</header>
+
+<div class="post-list taxonomy-posts">
+  {{ range .Pages.ByDate.Reverse }}
+  {{ partial "post-item.html" . }}
+  {{ end }}
+</div>
+
+{{ end }}

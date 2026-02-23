@@ -1,0 +1,9 @@
+{{/* layouts/robots.txt */}}
+{{/* Dynamic robots.txt — blocks indexing outside production environment. */}}
+User-agent: *
+{{ if hugo.IsProduction -}}
+Allow: /
+Sitemap: {{ "sitemap.xml" | absURL }}
+{{- else -}}
+Disallow: /
+{{- end }}

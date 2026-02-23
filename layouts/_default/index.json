@@ -1,0 +1,14 @@
+{{/* layouts/_default/index.json */}}
+{{/* JSON search index for all regular pages. Uses modern variable pattern (no $.Scratch). */}}
+{{- $index := slice -}}
+{{- range site.RegularPages -}}
+  {{- $index = $index | append (dict
+    "title" .Title
+    "tags" .Params.tags
+    "contents" .Plain
+    "permalink" .Permalink
+    "date" (.Date.Format "2006-01-02")
+    "section" .Section
+  ) -}}
+{{- end -}}
+{{- $index | jsonify -}}

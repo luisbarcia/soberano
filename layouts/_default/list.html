@@ -1,0 +1,63 @@
+{{/* layouts/_default/list.html */}}
+{{/* List template with pagination. Pinned posts appear at the top of the first page. */}}
+
+{{ define "title" }}{{ .Title }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<header class="post-header">
+  <h1 class="post-header__title">{{ .Title }}</h1>
+  {{ with .Description }}
+  <p class="text-dim">{{ . }}</p>
+  {{ end }}
+</header>
+
+{{ if .Pages }}
+
+{{/* Pinned posts — only on first page */}}
+{{ $pinned := where .Pages ".Params.pinned" true }}
+{{ $unpinned := where .Pages ".Params.pinned" "!=" true }}
+{{ $paginator := .Paginate ($unpinned.ByDate.Reverse) }}
+
+<div class="post-list">
+  {{/* Show pinned posts only on page 1 */}}
+  {{ if eq $paginator.PageNumber 1 }}
+    {{ range $pinned.ByDate.Reverse }}
+    {{ partial "post-item.html" . }}
+    {{ end }}
+  {{ end }}
+
+  {{/* Paginated posts */}}
+  {{ range $paginator.Pages }}
+  {{ partial "post-item.html" . }}
+  {{ end }}
+</div>
+
+{{/* Pagination nav */}}
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="pagination" aria-label="Page navigation">
+  <div class="post-nav">
+    {{ if $paginator.HasPrev }}
+    <a href="{{ $paginator.Prev.URL }}" class="post-nav__item" rel="prev">
+      <div class="post-nav__label">{{ T "newer" }}</div>
+    </a>
+    {{ else }}
+    <div></div>
+    {{ end }}
+
+    {{ if $paginator.HasNext }}
+    <a href="{{ $paginator.Next.URL }}" class="post-nav__item post-nav__item--next" rel="next">
+      <div class="post-nav__label">{{ T "older" }}</div>
+    </a>
+    {{ else }}
+    <div></div>
+    {{ end }}
+  </div>
+</nav>
+{{ end }}
+
+{{ else }}
+<p class="text-muted">{{ T "nothingPublished" }}</p>
+{{ end }}
+
+{{ end }}

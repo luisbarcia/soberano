@@ -1,0 +1,77 @@
+{{/* layouts/index.html */}}
+{{/* Homepage template. All content comes from site.Params and site.Menus. */}}
+
+{{ define "title" }}{{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+{{/* Hero */}}
+<header class="hero">
+  <h1>{{ with site.Params.hero_title }}{{ . | safeHTML }}{{ else }}{{ site.Title }}{{ end }}</h1>
+  {{ with site.Params.hero_subtitle | default site.Params.description }}
+  <p class="text-dim hero__desc">{{ . }}</p>
+  {{ end }}
+
+</header>
+
+{{/* Axiom — optional, only renders if configured */}}
+{{ with site.Params.axiom }}
+<div class="axiom">
+  <div class="axiom__label">{{ .label | default "Axiom" }}</div>
+  <p class="axiom__text">{{ .text }}</p>
+</div>
+{{ end }}
+
+{{/* Recent Posts — pinned first, then by date */}}
+{{ $allPosts := where site.RegularPages "Section" "posts" }}
+{{ $pinned := where $allPosts ".Params.pinned" true }}
+{{ $unpinned := where $allPosts ".Params.pinned" "!=" true }}
+{{ $maxPosts := site.Params.homepage_posts | default 5 }}
+{{ if $allPosts }}
+<section class="home-section" aria-label="{{ site.Params.homepage_posts_title | default "Posts" }}">
+  <div class="section-title">{{ site.Params.homepage_posts_title | default "Posts" }}</div>
+  <div class="post-list">
+    {{ range $pinned.ByDate.Reverse }}
+    {{ partial "post-item.html" . }}
+    {{ end }}
+    {{ range first $maxPosts $unpinned.ByDate.Reverse }}
+    {{ partial "post-item.html" . }}
+    {{ end }}
+  </div>
+  {{ if gt (len $allPosts) $maxPosts }}
+  <div class="home-section__more">
+    <a href="{{ "posts/" | relURL }}" class="text-dim">{{ site.Params.homepage_posts_more | default "All posts →" }}</a>
+  </div>
+  {{ end }}
+</section>
+{{ end }}
+
+{{/* Recent Portfolio — optional, only if portfolio section has content */}}
+{{ $projects := where site.RegularPages "Section" "portfolio" }}
+{{ $maxProjects := site.Params.homepage_projects | default 3 }}
+{{ if $projects }}
+<section class="home-section" aria-label="{{ site.Params.homepage_projects_title | default "Recent Projects" }}">
+  <div class="section-title">{{ site.Params.homepage_projects_title | default "Recent Projects" }}</div>
+  <div class="portfolio-grid">
+    {{ range first $maxProjects $projects }}
+    {{ partial "project-card.html" . }}
+    {{ end }}
+  </div>
+  {{ if gt (len $projects) $maxProjects }}
+  <div class="home-section__more">
+    <a href="{{ "portfolio/" | relURL }}" class="text-dim">{{ site.Params.homepage_projects_more | default "All projects →" }}</a>
+  </div>
+  {{ end }}
+</section>
+{{ end }}
+
+{{/* Manifesto — optional, only renders if configured */}}
+{{ with site.Params.manifesto }}
+<div class="manifesto" data-label="{{ .label | default "SYNTHESIS" }}">
+  {{ range .lines }}
+  <p>{{ . }}</p>
+  {{ end }}
+</div>
+{{ end }}
+
+{{ end }}

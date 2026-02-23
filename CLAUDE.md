@@ -1,0 +1,185 @@
+# Soberano — Hugo Theme
+
+## Project Overview
+Dark-first, cypherpunk-inspired Hugo theme for sovereign digital publishing. Monospace aesthetic, privacy-focused, zero external dependencies.
+
+**Site type:** Blog + Portfolio
+**CSS stack:** CSS puro (zero dependencies)
+**JS strategy:** Minimal (vanilla JS, ~78 lines)
+**Dark mode:** Dark-only (single scheme)
+**Distribution:** Hugo Module
+
+## Tech Stack
+- **Hugo** v0.128.0+ (standard edition, Go templates) — target upgrade to v0.156.0
+- **CSS**: Pure CSS (no framework), dark-only palette, custom properties
+- **JavaScript**: Vanilla JS via `js.Build` (ESBuild), no external libs
+- **Fonts**: Space Mono + Instrument Serif (self-hosted WOFF2)
+- **Search**: Pagefind integration
+- **i18n**: English + Portuguese (pt-BR)
+- **Go Module**: `github.com/luisbarcia/soberano`
+
+## Project Structure
+```
+soberano/                    # Theme root
+├── archetypes/              # Content templates (default, portfolio)
+├── assets/css/              # main.css (~1300 lines), syntax.css
+├── assets/js/               # main.js, pagefind-loader.js
+├── data/                    # Data files (currently empty)
+├── exampleSite/             # Demo site with hugo.toml config
+├── i18n/                    # en.yaml, pt-br.yaml
+├── layouts/
+│   ├── _default/            # baseof, list, single, terms
+│   ├── _markup/             # Render hooks (images, links, headings)
+│   ├── partials/            # head/, header, footer, navigation, components/
+│   ├── portfolio/           # Portfolio section templates
+│   └── shortcodes/          # axiom, manifesto, card
+├── static/fonts/            # WOFF2 font files
+├── static/images/           # Theme images
+├── go.mod                   # Go module definition
+├── theme.toml               # Theme metadata
+└── README.md                # Full documentation
+```
+
+## Development Commands
+```bash
+# Dev server (from exampleSite/)
+cd soberano/exampleSite && hugo server -D
+
+# Production build
+cd soberano/exampleSite && hugo --gc --minify
+
+# Update Hugo modules
+hugo mod get -u
+
+# Template profiling
+hugo --templateMetrics --templateMetricsHints
+
+# List drafts/expired/future content
+hugo list drafts
+hugo list expired
+hugo list future
+```
+
+## Key Design Principles
+- **Privacy-first**: No analytics, no tracking, no external requests
+- **Zero dependencies**: No npm, no build tools, no CDN
+- **CSP-compliant**: No inline styles/scripts, asset fingerprinting + SRI
+- **Accessibility**: skip-link, focus-visible, aria-labels, prefers-reduced-motion
+- **Dark-only**: Single dark theme with Bitcoin orange (#f7931a) accent
+- **Hugo-idiomatic**: Always prefer native Hugo features over external solutions
+
+## Color Palette
+```
+--bg: #0a0a0a          --surface: #111111
+--accent: #f7931a      --text: #e8e8e8
+--text-dim: #888888    --green: #4ade80
+--red: #f87171         --border: #222222
+```
+
+## Content Sections
+- **Posts** (`/posts`): Blog articles with tags, TOC, reading time
+- **Portfolio** (`/portfolio`): Project showcases with tech stack, links
+
+## Hugo Version Compatibility — Migration Table
+
+When upgrading to Hugo v0.156.0+, these functions/configs MUST be replaced:
+
+| Removed (v0.156+) | Replacement |
+|--------------------|-------------|
+| `getCSV` / `getJSON` | `resources.GetRemote` + `transform.Unmarshal` |
+| `resources.ToCSS` | `css.Sass` |
+| `resources.PostCSS` | `css.PostCSS` |
+| `resources.Babel` | `js.Babel` |
+| `.Page.NextPage` / `.Page.PrevPage` | `.Page.Next` / `.Page.Prev` |
+| `.Paginator.PageSize` | `.Paginator.PagerSize` |
+| `.Site.LastChange` | `.Site.Lastmod` |
+| `.Site.Author` | `.Site.Params.Author` |
+| `.Site.Social` | `.Site.Params.Social` |
+| `.Site.IsMultiLingual` | `hugo.IsMultilingual` |
+| `.Sites.First` | `.Sites.Default` |
+| `paginate` (config) | `pagination.pagerSize` |
+| `paginatePath` (config) | `pagination.path` |
+
+| Deprecated (use replacement) | Replacement |
+|-------------------------------|-------------|
+| `.Site.Data` | `hugo.Data` |
+| `.Site.AllPages` | check docs |
+| `Page.Sites` / `Site.Sites` | `hugo.Sites` |
+| `cascade._target` | `cascade.target` |
+| LibSass | Dart Sass |
+| `includeFiles`/`excludeFiles` | `files` with negation (`! pattern`) |
+
+### Version-specific features
+- **v0.152+**: New YAML library — `yes`/`no`/`on`/`off` no longer treated as booleans, use `true`/`false`
+- **v0.153+**: WebP via WASM (no Extended edition needed), animated WebP support, LibSass deprecated
+- **v0.154+**: Partial decorators with `inner` keyword, `reflect.*` functions
+- **v0.155+**: XMP/IPTC image metadata, aliases now site-relative (multilingual breaking change)
+- **v0.156+**: `hugo.Data` replaces `.Site.Data`, Spring Cleaning removals (see table above)
+
+## Hugo Template Anti-Patterns (NEVER do)
+- **Hardcode URLs**: `{{ .Site.baseURL }}/path` → use `.Permalink`, `.RelPermalink`, `relURL`, `absURL`
+- **Use `.Page.URL`** (deprecated) → use `.RelPermalink`
+- **Use removed functions**: see migration table above
+- **Use `yes`/`no` YAML booleans** (broken since v0.152) → use `true`/`false`
+- **Use `readDir`/`readFile`** in public themes — fails on many hosts
+- **Forget alt text** on images — accessibility and SEO penalty
+- **Ship heavy JS** — use `js.Build` (ESBuild) if needed, no webpack/vite
+- **Leave pages without layouts** → use `disableKinds` for unimplemented kinds
+- **Deliver incomplete snippets** — all code must be complete and functional
+
+## Template Conventions
+- Always include comments with file purpose, expected context (`.`), and accepted params
+- Use `with` to safely access potentially nil values
+- Use `$` for root context inside `range`/`with` blocks
+- Use `partialCached` for expensive partials that don't change per-page
+- Debug with `{{ debug.Dump . }}` or `{{ warnf "msg: %v" .Variable }}`
+- Use `templates.Defer` when processing needs to happen after all content is rendered
+
+## Privacy Modes (`params.privacy.mode`)
+Three-tier privacy system controlled via `[params.privacy]`:
+- **standard** (default): Full metadata, backwards-compatible
+- **hardened**: No generator, no-referrer, reduced JSON-LD (no sameAs/PGP)
+- **onion**: No OG/Twitter/canonical, no Person schema, Nostr+Matrix only in footer
+
+Related params:
+- `params.privacy.system_fonts`: Use system font stack instead of self-hosted WOFF2
+- Mobile nav works without JS via CSS `:target` selector (progressive enhancement)
+- `baseof.html` defines `$privacyMode` variable used throughout templates
+
+## Theme Extension Points
+Expose hooks for user customization without modifying theme files:
+- `partials/head/custom.html` — user can inject custom head content
+- `partials/hooks/body-start.html` — inject after `<body>` open
+- `partials/hooks/body-end.html` — inject before `</body>` close
+- Feature flags via `[params.features]` in hugo.toml
+- Design tokens via CSS custom properties in `:root`
+- Privacy via `[params.privacy]` in hugo.toml
+
+## Quality Targets
+| Metric | Target |
+|--------|--------|
+| Lighthouse Performance | ≥ 95 (target 100) |
+| Lighthouse Accessibility | ≥ 95 (target 100) |
+| Lighthouse Best Practices | 100 |
+| Lighthouse SEO | 100 |
+| Total CSS+JS | < 90KB |
+| LCP | < 2.5s |
+| INP | < 200ms |
+| CLS | < 0.1 |
+| WCAG level | AA minimum |
+
+## Conventions
+- Follow Hugo template conventions and Go template syntax
+- CSS uses custom properties (variables) defined in `:root`
+- Keep JS minimal — vanilla only, no frameworks
+- All fonts must remain self-hosted (WOFF2)
+- Maintain i18n parity between en.yaml and pt-br.yaml
+- Use semantic HTML and ARIA attributes for accessibility
+- Shortcodes: `axiom`, `manifesto`, `card`
+- Responsive images: use WebP with `picture` element and `srcset`
+- JSON-LD structured data for SEO (WebSite, BlogPosting, CreativeWork, BreadcrumbList)
+- When using features that require a specific Hugo version, annotate: `{{/* Requires Hugo ≥ vX.Y.Z */}}`
+
+## Git
+- Use Conventional Commits: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`
+- Theme code lives in `soberano/` subdirectory

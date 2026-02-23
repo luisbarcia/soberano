@@ -1,0 +1,9 @@
+{{/* layouts/shortcodes/axiom.html */}}
+{{/* Usage: {{< axiom label="Core principle" >}}Text here{{< /axiom >}} */}}
+{{/* Params: label (optional, default "Axiom")                            */}}
+
+{{ $label := .Get "label" | default "Axiom" }}
+<div class="axiom" role="note" aria-label="{{ $label }}">
+  <div class="axiom__label">{{ $label }}</div>
+  <p class="axiom__text">{{ .Inner | markdownify }}</p>
+</div>

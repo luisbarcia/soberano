@@ -1,0 +1,68 @@
+{{/* layouts/portfolio/single.html */}}
+{{/* Portfolio project page. Content first, metadata at the bottom. */}}
+
+{{ define "title" }}{{ .Title }} · Portfolio · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<article>
+  {{/* Header — minimal: status dot, title, stack */}}
+  <header class="post-header">
+    <div class="post-header__meta">
+      {{ with .Params.status }}
+        <span class="status-dot status-dot--{{ . }}"></span>
+        <span class="status-label">{{ . }}</span>
+      {{ end }}
+    </div>
+
+    <h1 class="post-header__title">{{ .Title }}</h1>
+
+    {{/* Hero image — Page Resource or fallback */}}
+    {{ $heroImg := .Resources.GetMatch "cover.*" }}
+    {{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "hero.*" }}{{ end }}
+    {{ if not $heroImg }}{{ with .Params.image }}{{ $heroImg = $.Resources.GetMatch . }}{{ end }}{{ end }}
+    {{ if $heroImg }}
+      {{ partial "components/picture.html" (dict
+        "img"     $heroImg
+        "alt"     (.Params.cover_alt | default .Title)
+        "loading" "eager"
+        "class"   "post-header__image"
+      ) }}
+    {{ else }}
+      {{ with .Params.image }}
+      <img src="{{ . | relURL }}" alt="{{ $.Title }}" class="post-header__image" loading="eager" decoding="async">
+      {{ end }}
+    {{ end }}
+
+    {{/* Stack — inline in header */}}
+    {{ with .Params.stack }}
+    <div class="project-card__stack">{{ delimit . " · " }}</div>
+    {{ end }}
+  </header>
+
+  {{/* Content — the main event, right after the header */}}
+  <div class="post-content" data-pagefind-body>
+    {{ .Content }}
+  </div>
+
+  {{/* Project footer */}}
+  <footer class="post-footer">
+
+    {{/* External links — plain action links */}}
+    {{ with .Params.links }}
+    <div class="portfolio-meta">
+      {{ range $label, $url := . }}
+      <a href="{{ $url }}" class="action-link" target="_blank" rel="noopener noreferrer">{{ $label }} ↗</a>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    {{/* Back navigation — plain link */}}
+    <div class="portfolio-meta portfolio-meta--back">
+      <a href="{{ "portfolio/" | relURL }}" class="action-link">{{ T "backToPortfolio" }}</a>
+    </div>
+
+  </footer>
+</article>
+
+{{ end }}

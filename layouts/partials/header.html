@@ -1,0 +1,29 @@
+{{/* header.html — Site header with brand, tagline, and responsive navigation.
+     Context: site (global)
+     Uses: site.Title, site.Params.tagline, site.Menus.main */}}
+<header class="site-header">
+  <div class="container">
+    <div class="site-header__inner">
+      <div class="site-header__brand">
+        <a href="{{ "/" | relURL }}" class="site-header__logo">{{ site.Title }}</a>
+        {{ with site.Params.tagline }}
+        <span class="site-header__tagline">{{ . }}</span>
+        {{ end }}
+      </div>
+
+      <a href="#nav-menu" class="nav-toggle nav-toggle--noscript" aria-label="Toggle navigation">[=]</a>
+      <button class="nav-toggle nav-toggle--js" aria-label="Toggle navigation" aria-expanded="false">[=]</button>
+
+      <nav class="nav" id="nav-menu" aria-label="Main navigation">
+        {{ range site.Menus.main }}
+          <a class="nav__link {{ if $.IsMenuCurrent "main" . }}nav__link--active{{ end }}"
+             href="{{ .URL | relURL }}"
+             {{ if $.IsMenuCurrent "main" . }}aria-current="page"{{ end }}
+             {{ if .Params.external }}target="_blank" rel="noopener noreferrer"{{ end }}>
+            {{ .Name }}
+          </a>
+        {{ end }}
+      </nav>
+    </div>
+  </div>
+</header>

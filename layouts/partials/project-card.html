@@ -1,0 +1,28 @@
+{{/* layouts/partials/project-card.html */}}
+{{/* Portfolio list card. Status is a small dot indicator, stack is inline text. */}}
+
+<div class="card project-card">
+  <a href="{{ .RelPermalink }}" class="project-card__link" aria-label="{{ .Title }}">
+    {{/* Top line: status dot + category */}}
+    <div class="project-card__top">
+      {{ with .Params.status }}
+        <span class="status-dot status-dot--{{ . }}"></span>
+        <span class="status-label">{{ . }}</span>
+      {{ end }}
+      {{ with .Params.category }}
+        <span class="project-card__category">{{ . }}</span>
+      {{ end }}
+    </div>
+
+    <span class="card__title">{{ .Title }}</span>
+
+    {{ with .Description }}
+    <p class="card__desc">{{ . }}</p>
+    {{ end }}
+  </a>
+
+  {{/* Stack — inline text, not tag boxes */}}
+  {{ with .Params.stack }}
+  <div class="project-card__stack">{{ delimit . " · " }}</div>
+  {{ end }}
+</div>

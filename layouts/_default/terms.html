@@ -1,0 +1,19 @@
+{{/* terms.html — Lists all terms for a taxonomy (e.g., all tags).
+     Context: .Page (taxonomy terms page) */}}
+{{ define "title" }}{{ T "tags" }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<header class="post-header">
+  <h1 class="post-header__title">{{ T "tags" }}</h1>
+</header>
+
+<div class="post-tags">
+  {{ range .Data.Terms.Alphabetical }}
+  <a href="{{ .Page.RelPermalink }}" class="post-tag">
+    [{{ .Page.Title }}] <span class="text-muted">({{ .Count }})</span>
+  </a>
+  {{ end }}
+</div>
+
+{{ end }}

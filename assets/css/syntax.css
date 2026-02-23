@@ -1,0 +1,75 @@
+/* Syntax Highlighting - Soberano Dark */
+.highlight { margin: 2rem 0; }
+.highlight pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+/* Chroma classes */
+.chroma { background: var(--surface); }
+.chroma .ln { color: var(--text-faint); margin-right: 1rem; }
+.chroma .lnt { color: var(--text-faint); margin-right: 1rem; }
+.chroma .hl { background: var(--accent-dim); display: block; }
+
+/* Keywords */
+.chroma .k,
+.chroma .kc,
+.chroma .kd,
+.chroma .kn,
+.chroma .kp,
+.chroma .kr { color: var(--accent); font-weight: bold; }
+.chroma .kt { color: var(--blue); }
+
+/* Strings */
+.chroma .s,
+.chroma .sa,
+.chroma .sb,
+.chroma .sc,
+.chroma .dl,
+.chroma .sd,
+.chroma .s2,
+.chroma .se,
+.chroma .sh,
+.chroma .si,
+.chroma .sx,
+.chroma .sr,
+.chroma .s1,
+.chroma .ss { color: var(--green); }
+
+/* Numbers */
+.chroma .m,
+.chroma .mb,
+.chroma .mf,
+.chroma .mh,
+.chroma .mi,
+.chroma .il,
+.chroma .mo { color: var(--accent-bright); }
+
+/* Comments */
+.chroma .c,
+.chroma .ch,
+.chroma .cm,
+.chroma .c1,
+.chroma .cs,
+.chroma .cp,
+.chroma .cpf { color: var(--text-muted); font-style: italic; }
+
+/* Functions & Names */
+.chroma .na { color: var(--blue); }
+.chroma .nb { color: var(--text); }
+.chroma .nc { color: var(--accent-bright); }
+.chroma .nf { color: var(--blue); }
+.chroma .nn { color: var(--text-dim); }
+.chroma .nt { color: var(--accent); }
+
+/* Operators */
+.chroma .o,
+.chroma .ow { color: var(--text-dim); }
+
+/* Punctuation */
+.chroma .p { color: var(--text-dim); }
+
+/* Errors */
+.chroma .err { color: var(--red); }

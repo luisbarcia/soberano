@@ -1,0 +1,8 @@
+{{/* layouts/shortcodes/manifesto.html */}}
+{{/* Usage: {{< manifesto label="SYNTHESIS" >}}Text here{{< /manifesto >}} */}}
+{{/* Params: label (optional, default "SYNTHESIS")                          */}}
+
+{{ $label := .Get "label" | default "SYNTHESIS" }}
+<div class="manifesto" data-label="{{ $label }}" role="note" aria-label="{{ $label }}">
+  {{ .Inner | markdownify }}
+</div>

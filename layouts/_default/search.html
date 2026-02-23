@@ -1,0 +1,26 @@
+{{/* layouts/_default/search.html */}}
+{{/* Search page using Pagefind. Preloads CSS via head block to avoid FOUC. */}}
+
+{{ define "title" }}{{ .Title }} · {{ site.Title }}{{ end }}
+
+{{ define "head" }}
+{{/* Preload Pagefind CSS to prevent flash of unstyled search UI */}}
+<link rel="preload" href="/pagefind/pagefind-ui.css" as="style">
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+{{ end }}
+
+{{ define "main" }}
+<article>
+  <header class="post-header">
+    <h1 class="post-header__title">{{ .Title }}</h1>
+  </header>
+
+  <div class="post-content">
+    <div id="search"></div>
+    <noscript><p>{{ T "searchRequiresJS" }}</p></noscript>
+  </div>
+</article>
+
+{{ $pagefindJS := resources.Get "js/pagefind-loader.js" | minify | fingerprint }}
+<script src="{{ $pagefindJS.RelPermalink }}" integrity="{{ $pagefindJS.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{ end }}

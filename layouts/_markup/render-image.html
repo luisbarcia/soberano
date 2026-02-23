@@ -1,0 +1,32 @@
+{{/* layouts/_markup/render-image.html */}}
+{{/* Render hook for images in Markdown: ![alt](src "title")               */}}
+{{/* If the image is a Page Resource, process with WebP + srcset.          */}}
+{{/* If the image is external, render as-is with lazy loading.             */}}
+
+{{ $img := .Page.Resources.GetMatch .Destination }}
+{{ if $img }}
+  {{/* Image is a Page Resource — full processing */}}
+  <figure>
+    {{ partial "components/picture.html" (dict
+      "img"     $img
+      "alt"     .Text
+      "loading" "lazy"
+    ) }}
+    {{ with .Title }}
+    <figcaption>{{ . }}</figcaption>
+    {{ end }}
+  </figure>
+{{ else }}
+  {{/* External image or static path — render as-is */}}
+  <figure>
+    <img
+      src="{{ .Destination | safeURL }}"
+      alt="{{ .Text }}"
+      loading="lazy"
+      decoding="async"
+    >
+    {{ with .Title }}
+    <figcaption>{{ . }}</figcaption>
+    {{ end }}
+  </figure>
+{{ end }}

@@ -1,0 +1,23 @@
+{{ define "title" }}Portfolio · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<header class="post-header">
+  <h1 class="post-header__title">{{ .Title }}</h1>
+  {{ with .Description }}
+  <p class="text-dim">{{ . }}</p>
+  {{ end }}
+</header>
+
+{{/* Projects grid */}}
+{{ if .Pages }}
+<div class="portfolio-grid">
+  {{ range .Pages.ByDate.Reverse }}
+  {{ partial "project-card.html" . }}
+  {{ end }}
+</div>
+{{ else }}
+<p class="text-muted mt-3">{{ T "nothingPublished" }}</p>
+{{ end }}
+
+{{ end }}

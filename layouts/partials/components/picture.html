@@ -1,0 +1,61 @@
+{{/* layouts/partials/components/picture.html */}}
+{{/* Responsive image with WebP srcset and fallback.                          */}}
+{{/*                                                                          */}}
+{{/* Usage:                                                                   */}}
+{{/*   {{ partial "components/picture.html" (dict                             */}}
+{{/*     "img"     $resource                                                  */}}
+{{/*     "alt"     "description"                                              */}}
+{{/*     "sizes"   "(max-width: 768px) 100vw, 720px"                          */}}
+{{/*     "loading" "lazy"                                                     */}}
+{{/*     "class"   "my-class"                                                 */}}
+{{/*   ) }}                                                                   */}}
+{{/*                                                                          */}}
+{{/* Parameters:                                                              */}}
+{{/*   .img     — Hugo image resource (required)                              */}}
+{{/*   .alt     — alt text (default: "")                                      */}}
+{{/*   .sizes   — sizes attribute (default: "(max-width: 768px) 100vw, 720px")*/}}
+{{/*   .loading — "lazy" or "eager" (default: "lazy")                         */}}
+{{/*   .class   — CSS class for the <picture> wrapper (optional)              */}}
+
+{{ $img := .img }}
+{{ $alt := .alt | default "" }}
+{{ $sizes := .sizes | default "(max-width: 768px) 100vw, 720px" }}
+{{ $loading := .loading | default "lazy" }}
+{{ $class := .class | default "" }}
+
+{{ $widths := slice 480 768 1200 }}
+{{ $srcsetWebP := slice }}
+
+{{ range $widths }}
+  {{/* Only resize if image is wider than target */}}
+  {{ if ge $img.Width . }}
+    {{ $resized := $img.Resize (printf "%dx webp q80" .) }}
+    {{ $srcsetWebP = $srcsetWebP | append (printf "%s %dw" $resized.RelPermalink .) }}
+  {{ else }}
+    {{/* Use original width for smaller images */}}
+    {{ $resized := $img.Resize (printf "%dx webp q80" $img.Width) }}
+    {{ $srcsetWebP = $srcsetWebP | append (printf "%s %dw" $resized.RelPermalink $img.Width) }}
+  {{ end }}
+{{ end }}
+
+{{/* Fallback: medium size as JPG */}}
+{{ $fallbackWidth := 768 }}
+{{ if lt $img.Width $fallbackWidth }}{{ $fallbackWidth = $img.Width }}{{ end }}
+{{ $fallback := $img.Resize (printf "%dx jpg q85" $fallbackWidth) }}
+
+<picture{{ with $class }} class="{{ . }}"{{ end }}>
+  <source
+    type="image/webp"
+    srcset="{{ delimit $srcsetWebP ", " }}"
+    sizes="{{ $sizes }}"
+  >
+  <img
+    src="{{ $fallback.RelPermalink }}"
+    alt="{{ $alt }}"
+    width="{{ $fallback.Width }}"
+    height="{{ $fallback.Height }}"
+    loading="{{ $loading }}"
+    {{ if eq $loading "eager" }}fetchpriority="high"{{ end }}
+    decoding="async"
+  >
+</picture>
