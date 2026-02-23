@@ -1,0 +1,9 @@
+{{/* layouts/partials/components/content-hash.html */}}
+{{/* Displays SHA-256 content hash if present in front matter. */}}
+{{/* Context: expects . to be a Page with .Params.sha256. */}}
+{{ with .Params.sha256 }}
+<div class="content-hash">
+  <span class="content-hash__label">{{ T "contentHashLabel" }}:</span>
+  <span class="content-hash__value">{{ . }}</span>
+</div>
+{{ end }}

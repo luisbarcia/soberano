@@ -1,0 +1,60 @@
+{{/* layouts/_default/canary.html */}}
+{{/* Warrant canary layout with dead man's switch. */}}
+{{/* Context: single page with layout: canary in front matter. */}}
+{{/* Front matter: expires (date), bitcoin_block (int), bitcoin_hash (string). */}}
+
+{{ define "title" }}{{ T "canaryTitle" }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+{{ with .Params.expires }}
+{{ $expires := time.AsTime . }}
+{{ $now := now }}
+{{ $isValid := gt $expires $now }}
+
+<article class="canary">
+  <h1>{{ T "canaryTitle" }}</h1>
+
+  {{/* Status badge — green/valid or red/expired */}}
+  <div class="canary__status {{ if $isValid }}canary__status--valid{{ else }}canary__status--expired{{ end }}">
+    {{ if $isValid }}{{ T "canaryValid" }}{{ else }}{{ T "canaryExpired" }}{{ end }}
+  </div>
+
+  {{/* Status explanation */}}
+  <p>{{ if $isValid }}{{ T "canaryStatusValid" }}{{ else }}{{ T "canaryStatusExpired" }}{{ end }}</p>
+
+  {{/* Dates */}}
+  <div class="canary__meta">
+    <span>{{ T "canaryLastUpdate" }}: <strong>{{ $.Date.Format "02 Jan 2006" }}</strong></span>
+    <span>{{ T "canaryExpiresOn" }}: <strong>{{ $expires.Format "02 Jan 2006" }}</strong></span>
+  </div>
+
+  {{/* Proof of contemporaneity — Bitcoin block reference */}}
+  {{ if and $.Params.bitcoin_block $.Params.bitcoin_hash }}
+  <div class="canary__proof">
+    <div class="canary__proof-title">{{ T "canaryProof" }}</div>
+    <div class="canary__proof-item">
+      {{ T "canaryBitcoinBlock" }}: <strong>#{{ $.Params.bitcoin_block }}</strong>
+    </div>
+    <div class="canary__proof-item">
+      Hash: <a href="https://mempool.space/block/{{ $.Params.bitcoin_hash }}" target="_blank" rel="noopener noreferrer">{{ $.Params.bitcoin_hash }}</a>
+    </div>
+  </div>
+  {{ end }}
+
+  {{/* Body — PGP-signed statement */}}
+  <div class="canary__body post-content">
+    {{ $.Content }}
+  </div>
+</article>
+
+{{ else }}
+{{/* Missing expires — show error to help content authors */}}
+<article class="canary">
+  <h1>{{ T "canaryTitle" }}</h1>
+  <div class="canary__status canary__status--expired">CONFIG ERROR</div>
+  <p>Canary page requires <code>expires</code> field in front matter.</p>
+</article>
+{{ end }}
+
+{{ end }}

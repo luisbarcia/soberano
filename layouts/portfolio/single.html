@@ -51,9 +51,9 @@
     {{/* Project metadata — client, period, role */}}
     {{ if or .Params.client .Params.period .Params.role }}
     <div class="portfolio-meta">
-      {{ with .Params.role }}<span><span class="portfolio-meta__label">Role:</span> {{ . }}</span>{{ end }}
-      {{ with .Params.client }}<span><span class="portfolio-meta__label">Client:</span> {{ . }}</span>{{ end }}
-      {{ with .Params.period }}<span><span class="portfolio-meta__label">Period:</span> {{ . }}</span>{{ end }}
+      {{ with .Params.role }}<span><span class="portfolio-meta__label">{{ T "projectRole" }}:</span> {{ . }}</span>{{ end }}
+      {{ with .Params.client }}<span><span class="portfolio-meta__label">{{ T "projectClient" }}:</span> {{ . }}</span>{{ end }}
+      {{ with .Params.period }}<span><span class="portfolio-meta__label">{{ T "projectPeriod" }}:</span> {{ . }}</span>{{ end }}
     </div>
     {{ end }}
 

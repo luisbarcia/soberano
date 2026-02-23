@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="{{ site.Language.Lang | default "en" }}" {{ if site.Params.privacy.system_fonts }}data-system-fonts{{ end }}>
 <head>
-  {{/* Privacy mode: standard (default), hardened, or onion */}}
+  {{/* Privacy mode: standard (default), hardened, or paranoid */}}
   {{ $privacyMode := site.Params.privacy.mode | default "standard" }}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +12,10 @@
   {{ $desc := .Description | default .Summary | default site.Params.description | default "" }}
   {{ $desc = $desc | plainify | htmlUnescape | truncate 155 "…" }}
   <meta name="description" content="{{ $desc }}">
+  {{ if ne $privacyMode "paranoid" }}
   {{ with site.Params.author }}
   <meta name="author" content="{{ . }}">
+  {{ end }}
   {{ end }}
   {{ if eq $privacyMode "standard" }}
   <meta name="generator" content="Hugo {{ hugo.Version }}">
@@ -24,20 +26,25 @@
   <meta name="robots" content="noindex, nofollow">
   {{ end }}
 
-  {{/* Privacy headers for hardened/onion modes */}}
+  {{/* Privacy headers for hardened/paranoid modes */}}
   {{ if ne $privacyMode "standard" }}
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="x-dns-prefetch-control" content="off">
   {{ end }}
 
+  {{/* Onion-Location — advertise Tor mirror to supporting browsers */}}
+  {{ with site.Params.sovereignty }}{{ with .onion_url }}
+  <meta http-equiv="onion-location" content="{{ . }}">
+  {{ end }}{{ end }}
+
   {{/* OG Image — resolved via shared partial */}}
   {{ $ogImg := partialCached "helpers/resolve-image.html" . .RelPermalink }}
 
-  {{ if ne $privacyMode "onion" }}
+  {{ if ne $privacyMode "paranoid" }}
   {{/* Open Graph */}}
   <meta property="og:title" content="{{ .Title }}">
   <meta property="og:description" content="{{ $desc }}">
-  <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+  <meta property="og:type" content="{{ if and .IsPage (eq .Section "posts") }}article{{ else }}website{{ end }}">
   <meta property="og:url" content="{{ .Permalink }}">
   <meta property="og:site_name" content="{{ site.Title }}">
   <meta property="og:locale" content="{{ site.Params.og_locale | default site.Language.Lang | default "en_US" }}">
@@ -69,7 +76,7 @@
 
   {{/* Canonical URL */}}
   <link rel="canonical" href="{{ .Permalink }}">
-  {{ end }}{{/* end ne privacyMode onion */}}
+  {{ end }}{{/* end ne privacyMode paranoid */}}
 
   {{/* Hreflang for multilingual sites */}}
   {{ if .IsTranslated }}
@@ -115,7 +122,7 @@
   {{ block "head" . }}{{ end }}
   {{ partial "head/custom.html" . }}
 </head>
-<body data-copy-label="{{ T "copyCode" }}" data-copied-label="{{ T "copied" }}">
+<body data-copy-label="{{ T "copyCode" }}" data-copied-label="{{ T "copied" }}" data-error-label="{{ T "copyError" }}" data-copy-aria="{{ T "copyAriaLabel" }}">
   {{ partial "hooks/body-start.html" . }}
   {{/* Accessibility: skip to content */}}
   <a href="#main-content" class="skip-link">{{ T "skipToContent" }}</a>

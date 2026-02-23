@@ -7,6 +7,8 @@ baseURL = "https://example.com/"
 languageCode = "en"
 title = "Soberano"
 enableRobotsTXT = true
+enableInlineShortcodes = false
+disableHugoGeneratorInject = true
 
 # When running from exampleSite/, use:
 #   hugo server -D
@@ -131,6 +133,8 @@ enableRobotsTXT = true
     # nostr = "npub1..."
     # mastodon = "https://mastodon.social/@yourname"
     # matrix = "@you:matrix.org"
+    # xmpp = "you@your-server.org"
+    # simplex = "https://simplex.chat/contact#..."
     # signal = "+1234567890"
     # linkedin = "yourname"
     # twitter = "yourname"
@@ -138,6 +142,30 @@ enableRobotsTXT = true
   # --- Crypto / PGP (optional) ---
   [params.crypto]
     pgp_fingerprint = "XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX"
+    # pgp_key_url = "/pgp/"
+    # keyoxide_url = "https://keyoxide.org/FINGERPRINT"
+
+  # --- Sovereignty features (optional) ---
+  # [params.sovereignty]
+  #   onion_url = "http://youronionaddress.onion"
+  #   ipfs_cid = "QmYourCIDHere"
+  #   ipfs_gateway = "https://gateway.ipfs.io"
+  #
+  #   [[params.sovereignty.mirrors]]
+  #     url = "http://youronion.onion"
+  #     type = "onion"
+  #     label = "Tor Hidden Service"
+  #
+  #   [[params.sovereignty.mirrors]]
+  #     url = "https://gateway.ipfs.io/ipfs/QmXXX"
+  #     type = "ipfs"
+  #     label = "IPFS Gateway"
+
+  # --- Nostr NIP-05 verification (optional) ---
+  # [params.nostr]
+  #   name = "_"
+  #   pubkey = "hex_pubkey_here"
+  #   relays = ["wss://relay.damus.io", "wss://nos.lol"]
 
   # --- Privacy modes ---
   # Controls metadata exposure. Three modes:
@@ -145,9 +173,10 @@ enableRobotsTXT = true
   #     canonical URLs, complete JSON-LD Person schema with sameAs/PGP.
   #   "hardened" — No generator meta, adds no-referrer and dns-prefetch-off.
   #     JSON-LD Person omits sameAs social links and PGP.
-  #   "onion" — Maximum privacy for .onion sites. No OG/Twitter/canonical,
-  #     no Person schema, no author in RSS, only pseudonymous social
-  #     links (Nostr/Matrix) in footer. Minimal JSON-LD.
+  #   "paranoid" — Maximum privacy. No OG/Twitter/canonical,
+  #     no Person schema, no author in RSS, only pseudonymous/federated
+  #     social links (Nostr/Matrix/Mastodon/XMPP/SimpleX) in footer.
+  #     Minimal JSON-LD. Ideal for .onion sites or maximum anonymity.
   # [params.privacy]
   #   mode = "standard"
   #   system_fonts = false  # Use system fonts instead of self-hosted (saves bandwidth)
@@ -196,6 +225,7 @@ enableRobotsTXT = true
 [security]
   [security.exec]
     allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^git$']
+    osEnv = ['(?i)^(PATH|PATHEXT|APPDATA|TMP|TEMP|TERM|GOPATH|HOME|USERPROFILE)$']
   [security.funcs]
     getenv = ['^HUGO_', '^CI$', '^NODE_ENV$']
   [security.http]

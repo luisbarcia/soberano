@@ -352,17 +352,17 @@ Soberano supports three privacy levels via `params.privacy.mode`:
 |------|-----------|------------|-----------|----------------|---------------|------------|
 | `standard` (default) | Yes | Yes | Yes | Full (sameAs, PGP) | All configured | Yes |
 | `hardened` | No | Yes | Yes | Reduced (no sameAs/PGP) | All configured | Yes |
-| `onion` | No | No | No | None (WebSite only) | Nostr + Matrix only | No |
+| `paranoid` | No | No | No | None (WebSite only) | Pseudonymous/federated only | No |
 
 ```toml
 [params.privacy]
-  mode = "hardened"       # "standard", "hardened", or "onion"
+  mode = "hardened"       # "standard", "hardened", or "paranoid"
   system_fonts = false    # Use system fonts instead of self-hosted WOFF2
 ```
 
 **Hardened mode** adds `no-referrer` and `x-dns-prefetch-control: off` meta tags. Suitable for privacy-conscious clearnet sites.
 
-**Onion mode** strips all identifying metadata for `.onion` deployments. Only pseudonymous networks (Nostr, Matrix) appear in the footer. No author information leaks via RSS, JSON-LD, or meta tags.
+**Paranoid mode** strips all identifying metadata. Only pseudonymous/federated networks (Nostr, Matrix, Mastodon, XMPP, SimpleX) appear in the footer. No author information leaks via RSS, JSON-LD, or meta tags. Ideal for `.onion` sites or maximum anonymity.
 
 ### System Fonts
 

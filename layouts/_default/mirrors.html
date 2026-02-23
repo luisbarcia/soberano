@@ -1,0 +1,43 @@
+{{/* layouts/_default/mirrors.html */}}
+{{/* Mirrors page layout — lists alternative access points for this site. */}}
+{{/* Context: single page with layout: mirrors in front matter. */}}
+{{/* Mirror data comes from site.Params.sovereignty.mirrors (array of tables). */}}
+
+{{ define "title" }}{{ T "mirrorsTitle" }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<article class="mirrors">
+  <h1>{{ T "mirrorsTitle" }}</h1>
+
+  {{/* Optional intro text from content body */}}
+  {{ with .Content }}
+  <div class="post-content">
+    {{ . }}
+  </div>
+  {{ end }}
+
+  {{/* Mirror list from config */}}
+  {{ with site.Params.sovereignty }}{{ with .mirrors }}
+  <div class="mirrors__list">
+    {{ range . }}
+    <div class="mirrors__item">
+      {{ $type := .type | default "clearnet" }}
+      <span class="mirrors__badge mirrors__badge--{{ $type }}">
+        {{ if eq $type "onion" }}{{ T "mirrorOnion" }}
+        {{ else if eq $type "i2p" }}{{ T "mirrorI2P" }}
+        {{ else if eq $type "ipfs" }}{{ T "mirrorIPFS" }}
+        {{ else }}{{ T "mirrorClearnet" }}
+        {{ end }}
+      </span>
+      <div class="mirrors__info">
+        <div class="mirrors__label">{{ .label }}</div>
+        <a href="{{ .url }}" class="mirrors__url" target="_blank" rel="noopener noreferrer">{{ .url }}</a>
+      </div>
+    </div>
+    {{ end }}
+  </div>
+  {{ end }}{{ end }}
+</article>
+
+{{ end }}

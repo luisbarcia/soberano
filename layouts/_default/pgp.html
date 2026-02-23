@@ -1,0 +1,36 @@
+{{/* layouts/_default/pgp.html */}}
+{{/* PGP public key page layout. */}}
+{{/* Context: single page with layout: pgp in front matter. */}}
+{{/* Uses site.Params.crypto for fingerprint and keyoxide_url. */}}
+
+{{ define "title" }}{{ T "pgpTitle" }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<article class="pgp-key">
+  <h1>{{ T "pgpTitle" }}</h1>
+
+  {{/* Fingerprint highlight */}}
+  {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
+  <div class="pgp-key__fingerprint">
+    {{ T "pgpFingerprint" }}: {{ . }}
+  </div>
+  {{ end }}{{ end }}
+
+  {{/* Action links */}}
+  {{ with site.Params.crypto }}
+  {{ if .keyoxide_url }}
+  <div class="pgp-key__actions">
+    <a href="{{ .keyoxide_url }}" target="_blank" rel="noopener noreferrer" class="action-link">[ {{ T "pgpVerify" }} ]</a>
+  </div>
+  {{ end }}
+  {{ end }}
+
+  {{/* Full key — rendered from markdown content */}}
+  {{/* The copy button is automatically added by main.js on <pre> blocks */}}
+  <div class="pgp-key__block post-content">
+    {{ .Content }}
+  </div>
+</article>
+
+{{ end }}

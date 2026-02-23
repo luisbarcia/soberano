@@ -1,0 +1,19 @@
+# security.txt — RFC 9116
+# https://securitytxt.org/
+#
+# Place this file at static/.well-known/security.txt in your Hugo site.
+# Hugo will serve it at /.well-known/security.txt automatically.
+#
+# For maximum authenticity, sign this file with your PGP key:
+#   gpg --clearsign security.txt && mv security.txt.asc security.txt
+#
+# Required fields:
+Contact: mailto:security@example.com
+Expires: 2027-01-01T00:00:00.000Z
+
+# Optional fields:
+# Encryption: https://example.com/pgp/
+# Preferred-Languages: en, pt-BR
+# Canonical: https://example.com/.well-known/security.txt
+# Policy: https://example.com/security-policy/
+# Acknowledgments: https://example.com/hall-of-fame/

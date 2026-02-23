@@ -1,9 +1,13 @@
-{{/* layouts/robots.txt */}}
-{{/* Dynamic robots.txt — blocks indexing outside production environment. */}}
+{{- /* layouts/robots.txt */ -}}
+{{- /* Dynamic robots.txt — blocks indexing outside production environment. */ -}}
+{{- /* In paranoid mode, omit Sitemap directive to avoid domain disclosure. */ -}}
+{{ $privacyMode := site.Params.privacy.mode | default "standard" -}}
 User-agent: *
 {{ if hugo.IsProduction -}}
 Allow: /
+{{ if ne $privacyMode "paranoid" -}}
 Sitemap: {{ "sitemap.xml" | absURL }}
+{{ end -}}
 {{- else -}}
 Disallow: /
 {{- end }}

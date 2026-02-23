@@ -21,13 +21,13 @@ Dark-first, cypherpunk-inspired Hugo theme for sovereign digital publishing. Mon
 ## Project Structure
 ```
 soberano/                    # Theme root
-├── archetypes/              # Content templates (default, portfolio)
+├── archetypes/              # Content templates (default, portfolio, canary)
 ├── assets/css/              # main.css (~1300 lines), syntax.css
 ├── assets/js/               # main.js, pagefind-loader.js
 ├── exampleSite/             # Demo site with hugo.toml config
 ├── i18n/                    # en.yaml, pt-br.yaml
 ├── layouts/
-│   ├── _default/            # baseof, list, single, terms
+│   ├── _default/            # baseof, list, single, terms, canary, pgp, mirrors, nostr-json
 │   ├── _markup/             # Render hooks (images, links, headings, codeblocks)
 │   ├── partials/            # head/, header, footer, navigation, components/
 │   ├── portfolio/           # Portfolio section templates
@@ -78,6 +78,9 @@ hugo list future
 ## Content Sections
 - **Posts** (`/posts`): Blog articles with tags, TOC, reading time
 - **Portfolio** (`/portfolio`): Project showcases with tech stack, links
+- **Canary** (`/canary`): Warrant canary with dead man's switch (`layout: canary`)
+- **PGP** (`/pgp`): PGP public key page (`layout: pgp`)
+- **Mirrors** (`/mirrors`): Alternative access points — Tor, I2P, IPFS (`layout: mirrors`)
 
 ## Hugo Version Compatibility — Migration Table
 
@@ -138,12 +141,23 @@ When upgrading to Hugo v0.156.0+, these functions/configs MUST be replaced:
 Three-tier privacy system controlled via `[params.privacy]`:
 - **standard** (default): Full metadata, backwards-compatible
 - **hardened**: No generator, no-referrer, reduced JSON-LD (no sameAs/PGP)
-- **onion**: No OG/Twitter/canonical, no Person schema, Nostr+Matrix only in footer
+- **paranoid**: No OG/Twitter/canonical, no Person schema, only pseudonymous/federated networks in footer
 
 Related params:
 - `params.privacy.system_fonts`: Use system font stack instead of self-hosted WOFF2
 - Mobile nav works without JS via CSS `:target` selector (progressive enhancement)
 - `baseof.html` defines `$privacyMode` variable used throughout templates
+
+## Sovereignty Features (`params.sovereignty`, `params.nostr`)
+Optional cypherpunk features activated via `hugo.toml`:
+- **Warrant Canary**: Dead man's switch page with Bitcoin block proof of contemporaneity
+- **Onion-Location**: `<meta http-equiv="onion-location">` for Tor Browser auto-redirect
+- **Mirrors**: Tor/I2P/IPFS/Clearnet alternative access points
+- **NIP-05**: Nostr identity verification via `.well-known/nostr.json` (Hugo template)
+- **Content Hash**: SHA-256 hash displayed on posts (via `sha256` front matter field)
+- **PGP Key Page**: Dedicated page with fingerprint highlight and Keyoxide link
+- **Security.txt**: RFC 9116 contact file (static, user-managed)
+- **Footer indicators**: Sovereignty badges (Canary/Onion/IPFS/PGP/NIP-05) with status dots
 
 ## Theme Extension Points
 Expose hooks for user customization without modifying theme files:
@@ -153,6 +167,7 @@ Expose hooks for user customization without modifying theme files:
 - Feature flags via `[params.features]` in hugo.toml
 - Design tokens via CSS custom properties in `:root`
 - Privacy via `[params.privacy]` in hugo.toml
+- Sovereignty via `[params.sovereignty]`, `[params.nostr]`, `[params.crypto]` in hugo.toml
 
 ## Quality Targets
 | Metric | Target |

@@ -17,7 +17,7 @@
     if (el) {
       var p = document.createElement('p');
       p.className = 'text-dim';
-      p.textContent = 'Search index not available. Run the build pipeline to enable search.';
+      p.textContent = el.dataset.searchUnavailable || 'Search index not available. Run the build pipeline to enable search.';
       el.textContent = '';
       el.appendChild(p);
     }

@@ -35,7 +35,7 @@
 
 {{/* Pagination nav */}}
 {{ if gt $paginator.TotalPages 1 }}
-<nav class="pagination" aria-label="Page navigation">
+<nav class="pagination" aria-label="{{ T "pageNav" }}">
   <div class="post-nav">
     {{ if $paginator.HasPrev }}
     <a href="{{ $paginator.Prev.URL }}" class="post-nav__item" rel="prev">

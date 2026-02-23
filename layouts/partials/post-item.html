@@ -3,15 +3,15 @@
 <div class="post-item">
   <a href="{{ .RelPermalink }}" class="post-item__link">
     {{ if .Params.pinned }}
-    <span class="post-item__date post-item__date--pinned" aria-label="Pinned">▸</span>
+    <span class="post-item__date post-item__date--pinned" aria-label="{{ T "pinned" }}">▸</span>
     {{ else }}
-    <span class="post-item__date">{{ .Date.Format "02 Jan 2006" }}</span>
+    <time class="post-item__date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan 2006" }}</time>
     {{ end }}
     <span class="post-item__title">{{ .Title }}</span>
   </a>
-  {{ with .Params.tags }}
+  {{ with .GetTerms "tags" }}
   <span class="post-item__tags">
-    {{ range first 2 . }}<a href="{{ "tags/" | relURL }}{{ . | urlize }}/" class="post-tag">[{{ . }}]</a> {{ end }}
+    {{ range first 2 . }}<a href="{{ .RelPermalink }}" class="post-tag">[{{ .LinkTitle }}]</a> {{ end }}
   </span>
   {{ end }}
 </div>

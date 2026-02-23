@@ -29,8 +29,8 @@
 {{ $unpinned := where $allPosts ".Params.pinned" "!=" true }}
 {{ $maxPosts := site.Params.homepage_posts | default 5 }}
 {{ if $allPosts }}
-<section class="home-section" aria-label="{{ site.Params.homepage_posts_title | default "Posts" }}">
-  <div class="section-title">{{ site.Params.homepage_posts_title | default "Posts" }}</div>
+<section class="home-section" aria-label="{{ site.Params.homepage_posts_title | default (T "homePosts") }}">
+  <div class="section-title">{{ site.Params.homepage_posts_title | default (T "homePosts") }}</div>
   <div class="post-list">
     {{ range $pinned.ByDate.Reverse }}
     {{ partial "post-item.html" . }}
@@ -41,7 +41,7 @@
   </div>
   {{ if gt (len $allPosts) $maxPosts }}
   <div class="home-section__more">
-    <a href="{{ "posts/" | relURL }}" class="text-dim">{{ site.Params.homepage_posts_more | default "All posts →" }}</a>
+    <a href="{{ "posts/" | relURL }}" class="text-dim">{{ site.Params.homepage_posts_more | default (T "homePostsMore") }}</a>
   </div>
   {{ end }}
 </section>
@@ -51,8 +51,8 @@
 {{ $projects := where site.RegularPages "Section" "portfolio" }}
 {{ $maxProjects := site.Params.homepage_projects | default 3 }}
 {{ if $projects }}
-<section class="home-section" aria-label="{{ site.Params.homepage_projects_title | default "Recent Projects" }}">
-  <div class="section-title">{{ site.Params.homepage_projects_title | default "Recent Projects" }}</div>
+<section class="home-section" aria-label="{{ site.Params.homepage_projects_title | default (T "homeProjects") }}">
+  <div class="section-title">{{ site.Params.homepage_projects_title | default (T "homeProjects") }}</div>
   <div class="portfolio-grid">
     {{ range first $maxProjects $projects }}
     {{ partial "project-card.html" . }}
@@ -60,7 +60,7 @@
   </div>
   {{ if gt (len $projects) $maxProjects }}
   <div class="home-section__more">
-    <a href="{{ "portfolio/" | relURL }}" class="text-dim">{{ site.Params.homepage_projects_more | default "All projects →" }}</a>
+    <a href="{{ "portfolio/" | relURL }}" class="text-dim">{{ site.Params.homepage_projects_more | default (T "homeProjectsMore") }}</a>
   </div>
   {{ end }}
 </section>

@@ -1,16 +1,16 @@
 {{/* layouts/partials/jsonld.html */}}
 {{/* Generates all JSON-LD structured data based on page type and privacy mode. */}}
 {{/* Context: the current page (.). Reads site.Params for all personal data.    */}}
-{{/* Uses jsonify for safe JSON serialization (no broken quotes).               */}}
+{{/* Uses printf + safeHTML to avoid Go template JS-context double-encoding.    */}}
 
 {{ $privacyMode := site.Params.privacy.mode | default "standard" }}
 
 {{/* OG Image — resolved via shared partial */}}
 {{ $ogImg := partialCached "helpers/resolve-image.html" . .RelPermalink }}
 
-{{/* Build sameAs array from social params (skip in onion mode) */}}
+{{/* Build sameAs array from social params (only used in standard mode) */}}
 {{ $sameAs := slice }}
-{{ if ne $privacyMode "onion" }}
+{{ if eq $privacyMode "standard" }}
 {{ with site.Params.social }}
   {{ with .github }}{{ $sameAs = $sameAs | append (printf "https://github.com/%s" .) }}{{ end }}
   {{ with .mastodon }}{{ $sameAs = $sameAs | append . }}{{ end }}
@@ -18,6 +18,9 @@
   {{ with .twitter }}{{ $sameAs = $sameAs | append (printf "https://twitter.com/%s" .) }}{{ end }}
 {{ end }}
 {{ end }}
+
+{{/* Helper: wrap JSON-LD in script tag, bypassing JS-context escaping */}}
+{{ $jsonldTag := `<script type="application/ld+json">%s</script>` }}
 
 {{/* === HOME PAGE === */}}
 {{ if .IsHome }}
@@ -30,11 +33,9 @@
 }}
 {{ with site.Params.description }}{{ $website = merge $website (dict "description" .) }}{{ end }}
 
-{{ if eq $privacyMode "onion" }}
-{{/* Onion mode: minimal WebSite only, no Person */}}
-<script type="application/ld+json">
-{{ dict "@context" "https://schema.org" "@graph" (slice $website) | jsonify | safeHTML }}
-</script>
+{{ if eq $privacyMode "paranoid" }}
+{{/* Paranoid mode: minimal WebSite only, no Person */}}
+{{ printf $jsonldTag (dict "@context" "https://schema.org" "@graph" (slice $website) | jsonify) | safeHTML }}
 {{ else }}
 {{/* Standard/hardened: include Person */}}
 {{ $person := dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL }}
@@ -56,9 +57,7 @@
   )) }}
 {{ end }}
 
-<script type="application/ld+json">
-{{ dict "@context" "https://schema.org" "@graph" (slice $website $person) | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag (dict "@context" "https://schema.org" "@graph" (slice $website $person) | jsonify) | safeHTML }}
 {{ end }}{{/* end privacy mode check */}}
 
 {{/* === BLOG POSTS === */}}
@@ -75,7 +74,7 @@
   "isPartOf" (dict "@type" "Blog" "@id" (printf "%sposts/#blog" site.BaseURL) "name" (printf "%s Blog" site.Title) "url" (printf "%sposts/" site.BaseURL))
   "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
 }}
-{{ if ne $privacyMode "onion" }}
+{{ if ne $privacyMode "paranoid" }}
   {{ $post = merge $post (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL)) }}
   {{ $post = merge $post (dict "publisher" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
 {{ end }}
@@ -85,9 +84,7 @@
 {{ with .Description }}{{ $post = merge $post (dict "description" .) }}{{ end }}
 {{ with .Lastmod }}{{ $post = merge $post (dict "dateModified" (.Format "2006-01-02T15:04:05Z07:00")) }}{{ end }}
 {{ with .Params.tags }}{{ $post = merge $post (dict "keywords" .) }}{{ end }}
-<script type="application/ld+json">
-{{ $post | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag ($post | jsonify) | safeHTML }}
 
 {{/* === PORTFOLIO PROJECTS === */}}
 {{ else if and .IsPage (eq .Section "portfolio") }}
@@ -98,20 +95,18 @@
   "url" .Permalink
   "dateCreated" (.Date.Format "2006-01-02")
 }}
-{{ if ne $privacyMode "onion" }}
+{{ if ne $privacyMode "paranoid" }}
   {{ $work = merge $work (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
 {{ end }}
 {{ with $ogImg }}{{ $work = merge $work (dict "image" .) }}{{ end }}
 {{ with .Description }}{{ $work = merge $work (dict "description" .) }}{{ end }}
 {{ with .Params.category }}{{ $work = merge $work (dict "genre" .) }}{{ end }}
 {{ with .Params.stack }}{{ $work = merge $work (dict "keywords" .) }}{{ end }}
-<script type="application/ld+json">
-{{ $work | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag ($work | jsonify) | safeHTML }}
 
 {{/* === ABOUT PAGE (nil-safe .File check) === */}}
 {{ else if and .IsPage .File (eq .File.ContentBaseName "about") }}
-{{ if ne $privacyMode "onion" }}
+{{ if ne $privacyMode "paranoid" }}
 {{ $aboutPerson := dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL }}
 {{ with site.Params.description }}{{ $aboutPerson = merge $aboutPerson (dict "description" .) }}{{ end }}
 {{ with site.Params.job_title }}{{ $aboutPerson = merge $aboutPerson (dict "jobTitle" .) }}{{ end }}
@@ -119,9 +114,7 @@
   {{ if $sameAs }}{{ $aboutPerson = merge $aboutPerson (dict "sameAs" $sameAs) }}{{ end }}
 {{ end }}
 {{ with site.Params.knows_about }}{{ $aboutPerson = merge $aboutPerson (dict "knowsAbout" .) }}{{ end }}
-<script type="application/ld+json">
-{{ dict "@context" "https://schema.org" "@type" "ProfilePage" "mainEntity" $aboutPerson | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag (dict "@context" "https://schema.org" "@type" "ProfilePage" "mainEntity" $aboutPerson | jsonify) | safeHTML }}
 {{ end }}
 
 {{/* === POSTS LIST (Blog section) === */}}
@@ -130,16 +123,14 @@
 {{ range first 10 .Pages.ByDate.Reverse }}
   {{ $blogPosts = $blogPosts | append (dict "@type" "BlogPosting" "headline" .Title "url" .Permalink "datePublished" (.Date.Format "2006-01-02")) }}
 {{ end }}
-<script type="application/ld+json">
-{{ dict
+{{ printf $jsonldTag (dict
   "@context" "https://schema.org"
   "@type" "Blog"
   "@id" (printf "%s#blog" .Permalink)
   "name" (printf "%s Blog" site.Title)
   "url" .Permalink
   "blogPost" $blogPosts
-| jsonify | safeHTML }}
-</script>
+| jsonify) | safeHTML }}
 
 {{/* === PORTFOLIO LIST (ItemList) === */}}
 {{ else if and .IsSection (eq .Section "portfolio") }}
@@ -147,16 +138,14 @@
 {{ range $i, $p := .Pages }}
   {{ $items = $items | append (dict "@type" "ListItem" "position" (add $i 1) "name" $p.Title "url" $p.Permalink) }}
 {{ end }}
-<script type="application/ld+json">
-{{ dict
+{{ printf $jsonldTag (dict
   "@context" "https://schema.org"
   "@type" "ItemList"
   "name" .Title
   "url" .Permalink
   "numberOfItems" (len .Pages)
   "itemListElement" $items
-| jsonify | safeHTML }}
-</script>
+| jsonify) | safeHTML }}
 
 {{/* === OTHER PAGES (generic) === */}}
 {{ else if .IsPage }}
@@ -167,19 +156,15 @@
   "url" .Permalink
   "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL))
 }}
-{{ if ne $privacyMode "onion" }}
+{{ if ne $privacyMode "paranoid" }}
   {{ $page = merge $page (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
 {{ end }}
 {{ with .Description }}{{ $page = merge $page (dict "description" .) }}{{ end }}
-<script type="application/ld+json">
-{{ $page | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag ($page | jsonify) | safeHTML }}
 
 {{/* === FALLBACK (list pages, taxonomies) === */}}
 {{ else }}
-<script type="application/ld+json">
-{{ dict "@context" "https://schema.org" "@type" "WebPage" "name" .Title "url" .Permalink "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL)) | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag (dict "@context" "https://schema.org" "@type" "WebPage" "name" .Title "url" .Permalink "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL)) | jsonify) | safeHTML }}
 {{ end }}
 
 {{/* BreadcrumbList — all pages except home */}}
@@ -199,9 +184,7 @@
 {{ else }}
   {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
 {{ end }}
-<script type="application/ld+json">
-{{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $breadcrumbs | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag (dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $breadcrumbs | jsonify) | safeHTML }}
 {{ end }}
 
 {{/* Additional schema: FAQ or HowTo (via front matter) */}}
@@ -215,9 +198,7 @@
     "acceptedAnswer" (dict "@type" "Answer" "text" .answer)
   ) }}
 {{ end }}
-<script type="application/ld+json">
-{{ dict "@context" "https://schema.org" "@type" "FAQPage" "mainEntity" $faqItems | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag (dict "@context" "https://schema.org" "@type" "FAQPage" "mainEntity" $faqItems | jsonify) | safeHTML }}
 {{ end }}
 {{ else if eq .Params.schema_type "HowTo" }}
 {{ with .Params.howto_steps }}
@@ -227,8 +208,6 @@
 {{ end }}
 {{ $howto := dict "@context" "https://schema.org" "@type" "HowTo" "name" $.Title "step" $steps }}
 {{ with $.Description }}{{ $howto = merge $howto (dict "description" .) }}{{ end }}
-<script type="application/ld+json">
-{{ $howto | jsonify | safeHTML }}
-</script>
+{{ printf $jsonldTag ($howto | jsonify) | safeHTML }}
 {{ end }}
 {{ end }}

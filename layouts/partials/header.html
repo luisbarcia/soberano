@@ -11,14 +11,15 @@
         {{ end }}
       </div>
 
-      <a href="#nav-menu" class="nav-toggle nav-toggle--noscript" aria-label="Toggle navigation">[=]</a>
-      <button class="nav-toggle nav-toggle--js" aria-label="Toggle navigation" aria-expanded="false">[=]</button>
+      <a href="#nav-menu" class="nav-toggle nav-toggle--noscript" aria-label="{{ T "toggleNav" }}">[=]</a>
+      <button class="nav-toggle nav-toggle--js" aria-label="{{ T "toggleNav" }}" aria-expanded="false">[=]</button>
 
-      <nav class="nav" id="nav-menu" aria-label="Main navigation">
+      <nav class="nav" id="nav-menu" aria-label="{{ T "mainNav" }}">
         {{ range site.Menus.main }}
-          <a class="nav__link {{ if $.IsMenuCurrent "main" . }}nav__link--active{{ end }}"
+          {{ $isCurrent := or ($.IsMenuCurrent "main" .) ($.HasMenuCurrent "main" .) }}
+          <a class="nav__link {{ if $isCurrent }}nav__link--active{{ end }}"
              href="{{ .URL | relURL }}"
-             {{ if $.IsMenuCurrent "main" . }}aria-current="page"{{ end }}
+             {{ if $isCurrent }}aria-current="{{ if $.IsMenuCurrent "main" . }}page{{ else }}true{{ end }}"{{ end }}
              {{ if .Params.external }}target="_blank" rel="noopener noreferrer"{{ end }}>
             {{ .Name }}
           </a>

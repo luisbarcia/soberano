@@ -34,12 +34,12 @@
 
     {{ if not .Date.IsZero }}
     <div class="post-header__meta">
-      <span>{{ .Date.Format "02 Jan 2006" }}</span>
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan 2006" }}</time>
       <span>{{ .ReadingTime }} {{ T "minRead" }}</span>
-      {{ with .Params.author }}<span>{{ . }}</span>{{ end }}
-      {{ with $.Params.tags }}
+      {{ if ne (site.Params.privacy.mode | default "standard") "paranoid" }}{{ with .Params.author }}<span>{{ . }}</span>{{ end }}{{ end }}
+      {{ with .GetTerms "tags" }}
       <span class="post-header__tags">
-        {{ range . }}<a href="{{ "tags/" | relURL }}{{ . | urlize }}/" class="post-tag">[{{ . }}]</a> {{ end }}
+        {{ range . }}<a href="{{ .RelPermalink }}" class="post-tag">[{{ .LinkTitle }}]</a> {{ end }}
       </span>
       {{ end }}
     </div>
@@ -48,7 +48,7 @@
 
   {{/* Table of Contents */}}
   {{ if and .Params.toc (gt (len .TableOfContents) 100) }}
-  <nav class="toc" aria-label="Table of contents">
+  <nav class="toc" aria-label="{{ T "contents" }}">
     <div class="toc__title">{{ T "contents" }}</div>
     {{ .TableOfContents }}
   </nav>
@@ -59,6 +59,9 @@
     {{ .Content }}
   </div>
 
+  {{/* Content hash — SHA-256 integrity verification */}}
+  {{ partial "components/content-hash.html" . }}
+
   {{/* Post Footer — tags + related */}}
   <footer class="post-footer">
 
@@ -66,7 +69,7 @@
     {{ if eq .Section "posts" }}
     {{ $related := first 3 (site.RegularPages.Related .) }}
     {{ with $related }}
-    <aside class="related-posts" aria-label="Related posts">
+    <aside class="related-posts" aria-label="{{ T "relatedPosts" }}">
       <div class="section-title">{{ T "related" }}</div>
       <div class="post-list">
         {{ range . }}

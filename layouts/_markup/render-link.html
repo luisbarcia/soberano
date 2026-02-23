@@ -1,12 +1,23 @@
 {{/* layouts/_markup/render-link.html */}}
 {{/* Render hook for Markdown links: [text](url "title")                   */}}
 {{/* External links open in new tab with noopener noreferrer.              */}}
-{{/* Internal links render normally.                                        */}}
+{{/* URL scheme validation prevents javascript: XSS vectors.              */}}
 
 {{ $url := .Destination }}
 {{ $isExternal := or (hasPrefix $url "http://") (hasPrefix $url "https://") (hasPrefix $url "//") }}
 
+{{/* Validate URL scheme — block javascript:, data:, vbscript: */}}
+{{ $isSafe := or (hasPrefix $url "http://") (hasPrefix $url "https://") (hasPrefix $url "//") (hasPrefix $url "/") (hasPrefix $url "#") (hasPrefix $url "?") (hasPrefix $url "mailto:") (hasPrefix $url "tel:") }}
+{{/* Relative URLs without scheme are safe */}}
+{{ if not (strings.Contains $url ":") }}{{ $isSafe = true }}{{ end }}
+
+{{ if $isSafe }}
 <a href="{{ $url | safeURL }}"
   {{- if $isExternal }} target="_blank" rel="noopener noreferrer"{{ end -}}
   {{- with .Title }} title="{{ . }}"{{ end -}}
 >{{ .Text | safeHTML }}</a>
+{{- else -}}
+<a href="#blocked-url"
+  {{- with .Title }} title="{{ . }}"{{ end -}}
+>{{ .Text | safeHTML }}</a>
+{{- end }}

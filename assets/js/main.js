@@ -47,7 +47,7 @@
     var copiedLabel = document.body.dataset.copiedLabel || 'Copied!';
 
     btn.textContent = copyLabel;
-    btn.setAttribute('aria-label', 'Copy code to clipboard');
+    btn.setAttribute('aria-label', document.body.dataset.copyAria || 'Copy code to clipboard');
     wrapper.appendChild(btn);
 
     btn.addEventListener('click', function() {
@@ -62,7 +62,7 @@
           btn.classList.remove('copy-btn--success');
         }, 1500);
       }).catch(function() {
-        btn.textContent = 'Error';
+        btn.textContent = document.body.dataset.errorLabel || 'Error';
         setTimeout(function() { btn.textContent = copyLabel; }, 1500);
       });
     });
