@@ -277,6 +277,11 @@ Soberano outputs no inline styles or scripts that violate CSP. Here are recommen
   for = "/fonts/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/pagefind/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 ```
 
 ### Vercel (`vercel.json`)
@@ -298,6 +303,12 @@ Soberano outputs no inline styles or scripts that violate CSP. Here are recommen
     },
     {
       "source": "/fonts/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/pagefind/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
@@ -326,9 +337,12 @@ Soberano outputs no inline styles or scripts that violate CSP. Here are recommen
 
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
+
+/pagefind/*
+  Cache-Control: public, max-age=31536000, immutable
 ```
 
-> **Note on Pagefind:** If using search, update the CSP to: `style-src 'self' 'unsafe-inline'` and add `connect-src 'self'` (Pagefind needs both for its UI styles and search index fetching). Without search, the CSP above is fully strict.
+> **Note on Pagefind:** The CSP above already covers Pagefind — `style-src 'self'` allows Pagefind's external CSS, and `connect-src 'self'` allows search index fetching. No `'unsafe-inline'` is needed; the theme's Pagefind loader uses DOM construction instead of inline styles.
 
 ## Privacy Modes
 

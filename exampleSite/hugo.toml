@@ -204,11 +204,11 @@ enableRobotsTXT = true
 # ==========================================================================
 # SECURITY — Hugo security restrictions (recommended)
 # ==========================================================================
-# [security]
-#   [security.exec]
-#     allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^git$', '^npx$', '^postcss$']
-#   [security.funcs]
-#     getenv = ['^HUGO_', '^CI$', '^NODE_ENV$']
-#   [security.http]
-#     methods = ['(?i)GET|POST']
-#     urls = ['.*']
+[security]
+  [security.exec]
+    allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^git$', '^npx$', '^postcss$']
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$', '^NODE_ENV$']
+  [security.http]
+    methods = ['(?i)GET|POST']
+    urls = ['.*']

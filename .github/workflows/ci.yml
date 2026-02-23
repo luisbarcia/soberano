@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.156.0"
+          extended: true
+
+      - name: Build exampleSite
+        working-directory: exampleSite
+        env:
+          HUGO_ENVIRONMENT: production
+        run: hugo --gc --minify --templateMetrics
+
+      - name: Verify output
+        working-directory: exampleSite
+        run: |
+          test -f public/index.html
+          test -f public/index.xml
+          test -f public/sitemap.xml
+          test -f public/robots.txt
+          echo "Build OK — $(find public -name '*.html' | wc -l) HTML files generated"
+
+      - name: Check HTML validity
+        uses: anishathalye/proof-html@v2
+        with:
+          directory: exampleSite/public
+          enforce_https: false
+          check_external_hash: false
+          ignore_empty_alt: false
+          check_opengraph: true
+        continue-on-error: true
+
+      - name: Upload build artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: exampleSite/public/
+          retention-days: 7
