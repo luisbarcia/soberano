@@ -1,0 +1,7 @@
+{{/* layouts/_markup/render-codeblock.html */}}
+{{/* Default code block render hook. Flags the page as having code blocks */}}
+{{/* so that syntax.css can be loaded conditionally in baseof.html.       */}}
+
+{{ $result := transform.HighlightCodeBlock . }}
+{{ $result.Wrapped }}
+{{ .Page.Store.Set "hasCode" true }}

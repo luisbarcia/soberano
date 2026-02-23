@@ -30,7 +30,7 @@
   <meta http-equiv="x-dns-prefetch-control" content="off">
   {{ end }}
 
-  {{/* OG Image — resolve before conditional block so JSON-LD can reuse */}}
+  {{/* OG Image — resolve before OG/Twitter meta tags */}}
   {{ $ogImg := "" }}
   {{ $heroImg := .Resources.GetMatch "cover.*" }}
   {{ if not $heroImg }}{{ $heroImg = .Resources.GetMatch "og.*" }}{{ end }}
@@ -91,232 +91,8 @@
   <link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
   {{ end }}
 
-  {{/* ==================== JSON-LD Structured Data ==================== */}}
-  {{/* All personal data sourced from site.Params — nothing hardcoded.    */}}
-  {{/* Uses jsonify for safe JSON serialization (no broken quotes).       */}}
-
-  {{/* Build sameAs array from social params (skip in onion mode) */}}
-  {{ $sameAs := slice }}
-  {{ if ne $privacyMode "onion" }}
-  {{ with site.Params.social }}
-    {{ with .github }}{{ $sameAs = $sameAs | append (printf "https://github.com/%s" .) }}{{ end }}
-    {{ with .mastodon }}{{ $sameAs = $sameAs | append . }}{{ end }}
-    {{ with .linkedin }}{{ $sameAs = $sameAs | append (printf "https://linkedin.com/in/%s" .) }}{{ end }}
-    {{ with .twitter }}{{ $sameAs = $sameAs | append (printf "https://twitter.com/%s" .) }}{{ end }}
-  {{ end }}
-  {{ end }}
-
-  {{/* === HOME PAGE === */}}
-  {{ if .IsHome }}
-  {{ $website := dict
-    "@type" "WebSite"
-    "@id" (printf "%s#website" site.BaseURL)
-    "name" site.Title
-    "url" site.BaseURL
-    "inLanguage" (site.Language.Lang | default "en")
-  }}
-  {{ with site.Params.description }}{{ $website = merge $website (dict "description" .) }}{{ end }}
-
-  {{ if eq $privacyMode "onion" }}
-  {{/* Onion mode: minimal WebSite only, no Person */}}
-  <script type="application/ld+json">
-  {{ dict "@context" "https://schema.org" "@graph" (slice $website) | jsonify | safeHTML }}
-  </script>
-  {{ else }}
-  {{/* Standard/hardened: include Person */}}
-  {{ $person := dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL }}
-  {{ with site.Params.description }}{{ $person = merge $person (dict "description" .) }}{{ end }}
-  {{ with site.Params.job_title }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
-  {{ if eq $privacyMode "standard" }}
-    {{ if $sameAs }}{{ $person = merge $person (dict "sameAs" $sameAs) }}{{ end }}
-    {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
-      {{ $person = merge $person (dict "identifier" (dict "@type" "PropertyValue" "propertyID" "PGP Fingerprint" "value" .)) }}
-    {{ end }}{{ end }}
-  {{ end }}
-  {{ with site.Params.knows_about }}{{ $person = merge $person (dict "knowsAbout" .) }}{{ end }}
-  {{ $website = merge $website (dict "publisher" (dict "@id" (printf "%s#person" site.BaseURL))) }}
-  {{ with site.GetPage "search" }}
-    {{ $website = merge $website (dict "potentialAction" (dict
-      "@type" "SearchAction"
-      "target" (dict "@type" "EntryPoint" "urlTemplate" (printf "%ssearch/?q={search_term_string}" site.BaseURL))
-      "query-input" "required name=search_term_string"
-    )) }}
-  {{ end }}
-
-  <script type="application/ld+json">
-  {{ dict "@context" "https://schema.org" "@graph" (slice $website $person) | jsonify | safeHTML }}
-  </script>
-  {{ end }}{{/* end privacy mode check */}}
-
-  {{/* === BLOG POSTS === */}}
-  {{ else if and .IsPage (eq .Section "posts") }}
-  {{ $post := dict
-    "@context" "https://schema.org"
-    "@type" "BlogPosting"
-    "headline" .Title
-    "url" .Permalink
-    "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
-    "wordCount" .WordCount
-    "timeRequired" (printf "PT%dM" .ReadingTime)
-    "inLanguage" (site.Language.Lang | default "en")
-    "isPartOf" (dict "@type" "Blog" "@id" (printf "%sposts/#blog" site.BaseURL) "name" (printf "%s Blog" site.Title) "url" (printf "%sposts/" site.BaseURL))
-    "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
-  }}
-  {{ if ne $privacyMode "onion" }}
-    {{ $post = merge $post (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL)) }}
-    {{ $post = merge $post (dict "publisher" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
-  {{ end }}
-  {{ with $ogImg }}{{ $post = merge $post (dict "image" .) }}{{ end }}
-  {{ with .Description }}{{ $post = merge $post (dict "description" .) }}{{ end }}
-  {{ with .Lastmod }}{{ $post = merge $post (dict "dateModified" (.Format "2006-01-02T15:04:05Z07:00")) }}{{ end }}
-  {{ with .Params.tags }}{{ $post = merge $post (dict "keywords" .) }}{{ end }}
-  <script type="application/ld+json">
-  {{ $post | jsonify | safeHTML }}
-  </script>
-
-  {{/* === PORTFOLIO PROJECTS === */}}
-  {{ else if and .IsPage (eq .Section "portfolio") }}
-  {{ $work := dict
-    "@context" "https://schema.org"
-    "@type" "CreativeWork"
-    "name" .Title
-    "url" .Permalink
-    "dateCreated" (.Date.Format "2006-01-02")
-  }}
-  {{ if ne $privacyMode "onion" }}
-    {{ $work = merge $work (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
-  {{ end }}
-  {{ with $ogImg }}{{ $work = merge $work (dict "image" .) }}{{ end }}
-  {{ with .Description }}{{ $work = merge $work (dict "description" .) }}{{ end }}
-  {{ with .Params.category }}{{ $work = merge $work (dict "genre" .) }}{{ end }}
-  {{ with .Params.stack }}{{ $work = merge $work (dict "keywords" .) }}{{ end }}
-  <script type="application/ld+json">
-  {{ $work | jsonify | safeHTML }}
-  </script>
-
-  {{/* === ABOUT PAGE (nil-safe .File check) === */}}
-  {{ else if and .IsPage .File (eq .File.ContentBaseName "about") }}
-  {{ if ne $privacyMode "onion" }}
-  {{ $aboutPerson := dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL }}
-  {{ with site.Params.description }}{{ $aboutPerson = merge $aboutPerson (dict "description" .) }}{{ end }}
-  {{ with site.Params.job_title }}{{ $aboutPerson = merge $aboutPerson (dict "jobTitle" .) }}{{ end }}
-  {{ if eq $privacyMode "standard" }}
-    {{ if $sameAs }}{{ $aboutPerson = merge $aboutPerson (dict "sameAs" $sameAs) }}{{ end }}
-  {{ end }}
-  {{ with site.Params.knows_about }}{{ $aboutPerson = merge $aboutPerson (dict "knowsAbout" .) }}{{ end }}
-  <script type="application/ld+json">
-  {{ dict "@context" "https://schema.org" "@type" "ProfilePage" "mainEntity" $aboutPerson | jsonify | safeHTML }}
-  </script>
-  {{ end }}
-
-  {{/* === POSTS LIST (Blog section) === */}}
-  {{ else if and .IsSection (eq .Section "posts") }}
-  {{ $blogPosts := slice }}
-  {{ range first 10 .Pages.ByDate.Reverse }}
-    {{ $blogPosts = $blogPosts | append (dict "@type" "BlogPosting" "headline" .Title "url" .Permalink "datePublished" (.Date.Format "2006-01-02")) }}
-  {{ end }}
-  <script type="application/ld+json">
-  {{ dict
-    "@context" "https://schema.org"
-    "@type" "Blog"
-    "@id" (printf "%s#blog" .Permalink)
-    "name" (printf "%s Blog" site.Title)
-    "url" .Permalink
-    "blogPost" $blogPosts
-  | jsonify | safeHTML }}
-  </script>
-
-  {{/* === PORTFOLIO LIST (ItemList) === */}}
-  {{ else if and .IsSection (eq .Section "portfolio") }}
-  {{ $items := slice }}
-  {{ range $i, $p := .Pages }}
-    {{ $items = $items | append (dict "@type" "ListItem" "position" (add $i 1) "name" $p.Title "url" $p.Permalink) }}
-  {{ end }}
-  <script type="application/ld+json">
-  {{ dict
-    "@context" "https://schema.org"
-    "@type" "ItemList"
-    "name" .Title
-    "url" .Permalink
-    "numberOfItems" (len .Pages)
-    "itemListElement" $items
-  | jsonify | safeHTML }}
-  </script>
-
-  {{/* === OTHER PAGES (generic) === */}}
-  {{ else if .IsPage }}
-  {{ $page := dict
-    "@context" "https://schema.org"
-    "@type" "WebPage"
-    "name" .Title
-    "url" .Permalink
-    "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL))
-  }}
-  {{ if ne $privacyMode "onion" }}
-    {{ $page = merge $page (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
-  {{ end }}
-  {{ with .Description }}{{ $page = merge $page (dict "description" .) }}{{ end }}
-  <script type="application/ld+json">
-  {{ $page | jsonify | safeHTML }}
-  </script>
-
-  {{/* === FALLBACK (list pages, taxonomies) === */}}
-  {{ else }}
-  <script type="application/ld+json">
-  {{ dict "@context" "https://schema.org" "@type" "WebPage" "name" .Title "url" .Permalink "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL)) | jsonify | safeHTML }}
-  </script>
-  {{ end }}
-
-  {{/* BreadcrumbList — all pages except home */}}
-  {{ if not .IsHome }}
-  {{ $breadcrumbs := slice (dict "@type" "ListItem" "position" 1 "name" (T "home") "item" (site.BaseURL | strings.TrimRight "/")) }}
-  {{ if .IsSection }}
-    {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
-  {{ else if and .IsPage .Section }}
-    {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" (.Section | title) "item" (printf "%s%s" site.BaseURL .Section | strings.TrimRight "/")) }}
-    {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 3 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
-  {{/* Taxonomy term pages: Home > Taxonomy > Term (e.g., Home > Tags > "go") */}}
-  {{ else if eq .Kind "term" }}
-    {{ with .Parent }}
-    {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
-    {{ end }}
-    {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 3 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
-  {{ else }}
-    {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
-  {{ end }}
-  <script type="application/ld+json">
-  {{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $breadcrumbs | jsonify | safeHTML }}
-  </script>
-  {{ end }}
-
-  {{/* Additional schema: FAQ or HowTo (via front matter) */}}
-  {{ if eq .Params.schema_type "FAQ" }}
-  {{ with .Params.faq_items }}
-  {{ $faqItems := slice }}
-  {{ range . }}
-    {{ $faqItems = $faqItems | append (dict
-      "@type" "Question"
-      "name" .question
-      "acceptedAnswer" (dict "@type" "Answer" "text" .answer)
-    ) }}
-  {{ end }}
-  <script type="application/ld+json">
-  {{ dict "@context" "https://schema.org" "@type" "FAQPage" "mainEntity" $faqItems | jsonify | safeHTML }}
-  </script>
-  {{ end }}
-  {{ else if eq .Params.schema_type "HowTo" }}
-  {{ with .Params.howto_steps }}
-  {{ $steps := slice }}
-  {{ range $i, $s := . }}
-    {{ $steps = $steps | append (dict "@type" "HowToStep" "position" (add $i 1) "name" .name "text" .text) }}
-  {{ end }}
-  {{ $howto := dict "@context" "https://schema.org" "@type" "HowTo" "name" $.Title "step" $steps }}
-  {{ with $.Description }}{{ $howto = merge $howto (dict "description" .) }}{{ end }}
-  <script type="application/ld+json">
-  {{ $howto | jsonify | safeHTML }}
-  </script>
-  {{ end }}
-  {{ end }}
+  {{/* JSON-LD Structured Data — extracted to dedicated partial */}}
+  {{ partial "jsonld.html" . }}
 
   <title>{{ block "title" . }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
 
@@ -329,8 +105,12 @@
   {{/* CSS — minified + fingerprinted + SRI */}}
   {{ $mainCSS := resources.Get "css/main.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $mainCSS.RelPermalink }}" integrity="{{ $mainCSS.Data.Integrity }}" crossorigin="anonymous">
+  {{/* Syntax CSS — loaded only on pages with code blocks (flagged by render-codeblock.html) */}}
+  {{ $noop := .WordCount }}{{/* Force content rendering so .Store is populated */}}
+  {{ if .Store.Get "hasCode" }}
   {{ $syntaxCSS := resources.Get "css/syntax.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $syntaxCSS.RelPermalink }}" integrity="{{ $syntaxCSS.Data.Integrity }}" crossorigin="anonymous">
+  {{ end }}
 
   {{/* RSS autodiscovery */}}
   {{ range .AlternativeOutputFormats }}
