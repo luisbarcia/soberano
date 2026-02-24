@@ -166,7 +166,8 @@
         {{ T "sovereigntyIPFS" }}
       </span>
       {{ end }}{{ end }}
-      {{/* PGP */}}
+      {{/* PGP — hidden in paranoid (fingerprint is identifying) */}}
+      {{ if ne $privacyMode "paranoid" }}
       {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
         {{ $pgpURL := site.Params.crypto.pgp_key_url }}
         {{ if $pgpURL }}
@@ -181,6 +182,7 @@
         </span>
         {{ end }}
       {{ end }}{{ end }}
+      {{ end }}
       {{/* Integrity manifest */}}
       {{ with site.GetPage "/integrity" }}
       <a href="{{ .RelPermalink }}" class="sovereignty-badge">
@@ -188,13 +190,15 @@
         {{ T "sovereigntyIntegrity" | default "Integrity" }}
       </a>
       {{ end }}
-      {{/* NIP-05 */}}
+      {{/* NIP-05 — hidden in paranoid (pubkey is identifying) */}}
+      {{ if ne $privacyMode "paranoid" }}
       {{ with site.Params.nostr }}{{ with .pubkey }}
       <a href="https://njump.me/{{ . }}" target="_blank" rel="noopener noreferrer" class="sovereignty-badge">
         <span class="sovereignty-badge__dot"></span>
         {{ T "sovereigntyNIP05" }}
       </a>
       {{ end }}{{ end }}
+      {{ end }}
       {{/* Support */}}
       {{ with site.GetPage "/support" }}
         <a href="{{ .RelPermalink }}" class="sovereignty-badge">
