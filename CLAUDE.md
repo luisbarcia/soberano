@@ -198,3 +198,8 @@ Expose hooks for user customization without modifying theme files:
 ## Git
 - Use Conventional Commits: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`
 - Theme code lives in `soberano/` subdirectory
+- **GitHub identity**: This repo belongs to `luisbarcia` (NOT `luismattos`)
+  - Git user: `luisbarcia <barcia.me@proton.me>` (configured in `.git/config`)
+  - GitHub API: use `GH_TOKEN` from `/Users/luismattos/Documents/Workspaces/luisbarcia/.envrc`
+  - For `gh` commands: always prefix with `source /Users/luismattos/Documents/Workspaces/luisbarcia/.envrc &&` or pass `GH_TOKEN` inline
+  - For `gh release`, `gh pr`, `gh issue`: always use `--repo luisbarcia/soberano`

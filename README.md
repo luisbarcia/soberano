@@ -6,21 +6,25 @@ A dark, monospace, cypherpunk-inspired Hugo theme for sovereign digital publishi
 
 ## Features
 
-- **Dark-first design** — Black background, monospace typography, amber accent
-- **Noise texture overlay** — Subtle grain for analog feel
+- **Dark-first design** — Black background, monospace typography, Bitcoin orange accent
 - **Fully configurable** — All content driven by `hugo.toml` params and menus. No hardcoded pages or links.
-- **Custom shortcodes** — axiom, manifesto, card
-- **Portfolio section** — Built-in project showcase with stack tags and status badges
+- **Sovereignty features** — Warrant canary, PGP key page, content integrity hashes, mirrors, NIP-05, onion-location
+- **Three-tier privacy** — Standard, hardened, and paranoid modes controlling metadata exposure
+- **Custom shortcodes** — axiom, manifesto, card, callout (info/warning/danger)
+- **Portfolio section** — Project showcase with stack tags, status badges, metadata
+- **Archive page** — Posts grouped by year
 - **Search** — Pagefind integration with themed UI
-- **JSON-LD** — Rich structured data (WebSite, Person, BlogPosting, CreativeWork, BreadcrumbList, ItemList, ProfilePage)
-- **SEO** — Open Graph, Twitter Cards, canonical URLs, dynamic robots meta, hreflang for multilingual
-- **Responsive** — Mobile-first with collapsible navigation
+- **Prev/next navigation** — Between posts within a section
+- **JSON-LD** — Rich structured data (WebSite, Person, BlogPosting, CreativeWork, BreadcrumbList)
+- **SEO** — Open Graph, Twitter Cards, canonical URLs, dynamic robots meta
+- **Responsive** — Mobile-first with CSS-only collapsible navigation (progressive JS enhancement)
 - **Accessible** — Skip-link, focus-visible, aria-labels, reduced-motion support
 - **Fast** — No JavaScript frameworks, minimal CSS, asset fingerprinting + SRI
-- **Privacy-friendly** — No analytics, no external tracking, self-hosted fonts
-- **Paginated lists** — Built-in pagination with pinned posts support
-- **Syntax highlighting** — Custom dark color scheme (Chroma)
-- **RSS feed** — Built-in autodiscovery
+- **CSP-compliant** — No inline styles or scripts
+- **Privacy-friendly** — No analytics, no external tracking, self-hosted fonts, zero external requests
+- **Paginated lists** — With pinned posts support
+- **Syntax highlighting** — Custom dark color scheme, conditional CSS loading
+- **RSS + JSON feeds** — Built-in autodiscovery
 - **Table of contents** — Per-post, opt-in via front matter
 - **Print styles** — Clean print output
 
@@ -71,12 +75,11 @@ All theme behavior is controlled via `hugo.toml`. Copy `exampleSite/hugo.toml` a
 
 ### Menus
 
-The theme uses **three menus** — no navigation links are hardcoded:
+The theme uses **two menus** — no navigation links are hardcoded:
 
 | Menu | Location | Purpose |
 |------|----------|---------|
 | `menus.main` | Header navigation | Primary site navigation |
-| `menus.hero` | Homepage hero section | Quick links below the hero title |
 | `menus.footer` | Footer | Secondary navigation (search, RSS, etc.) |
 
 ```toml
@@ -84,12 +87,6 @@ The theme uses **three menus** — no navigation links are hardcoded:
 [[menus.main]]
   name = "Posts"
   url = "/posts/"
-  weight = 1
-
-# Hero quick links
-[[menus.hero]]
-  name = "About"
-  url = "/about/"
   weight = 1
 
 # Footer nav
@@ -121,7 +118,6 @@ External links (open in new tab):
 
   # SEO
   og_image = "og-default.png"        # Default OG image (in static/)
-  # og_locale = "en_US"              # Override OG locale
 
   # JSON-LD (optional — enriches Person schema)
   # job_title = "Software Engineer"
@@ -135,17 +131,16 @@ External links (open in new tab):
   homepage_posts = 5                  # Number of posts on homepage
   homepage_projects = 3               # Number of projects on homepage
 
-  # Footer
-  footer_left = "Your Name · Powered by Hugo"
-
   # Social (drives footer icons + JSON-LD sameAs)
   [params.social]
     github = "yourname"
-    # email, nostr, mastodon, matrix, signal, linkedin, twitter
+    # email, nostr, mastodon, matrix, signal, linkedin, twitter, xmpp, simplex
 
-  # PGP fingerprint (optional, shown in footer)
-  # [params.crypto]
-  #   pgp_fingerprint = "XXXX XXXX ..."
+  # PGP (optional, shown in footer)
+  [params.crypto]
+    pgp_fingerprint = "XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX"
+    pgp_key_url = "/pgp/"
+    # keyoxide_url = "https://keyoxide.org/FINGERPRINT"
 ```
 
 ### Optional Homepage Blocks
@@ -194,7 +189,118 @@ Description with **markdown** support.
 {{</* /card */>}}
 ```
 
+### Callout
+
+Three types: `info` (blue), `warning` (yellow), `danger` (red). Title is optional.
+
+```markdown
+{{</* callout type="warning" title="Heads up" */>}}
+This action may have unintended side effects.
+{{</* /callout */>}}
+```
+
+## Sovereignty Features
+
+Optional cypherpunk features activated via `hugo.toml`. These are what make Soberano unique — no other Hugo theme integrates these as first-class features.
+
+### Warrant Canary
+
+Dead man's switch page with Bitcoin block proof of contemporaneity. Create `content/canary.md` with `layout: canary`:
+
+```yaml
+---
+title: "Warrant Canary"
+layout: canary
+expires: 2026-05-01
+bitcoin_block: 880000
+bitcoin_hash: "0000000000000000000..."
+---
+```
+
+If `expires` passes without renewal, the canary status automatically turns red.
+
+### PGP Key Page
+
+Dedicated page with fingerprint highlight, Keyoxide link, and optional key rotation history. Create `content/pgp.md` with `layout: pgp`:
+
+```yaml
+---
+title: "PGP Public Key"
+layout: pgp
+rotations:
+  - date: "2025-09-01"
+    fingerprint: "7D6D 036C 2ED1 ..."
+    status: "active"
+    bitcoin_block: 880000
+    bitcoin_hash: "0000000000..."
+  - date: "2024-08-11"
+    fingerprint: "6DFD AE66 D43F ..."
+    status: "revoked"
+---
+```
+
+### Content Integrity
+
+Every post automatically displays a SHA-256 hash of its source content. To provide a manually signed hash, add `sha256` to the front matter:
+
+```yaml
+sha256: "a1b2c3d4..."      # Shows "signed" badge instead of "auto"
+pgp_signature: |            # Optional PGP signature in collapsible block
+  -----BEGIN PGP SIGNATURE-----
+  ...
+  -----END PGP SIGNATURE-----
+```
+
+### Integrity Manifest
+
+Site-wide hash listing at `/integrity/`. Create `content/integrity.md` with `layout: integrity`.
+
+### Mirrors
+
+Alternative access points (Tor, I2P, IPFS). Create `content/mirrors.md` with `layout: mirrors` and configure in `hugo.toml`:
+
+```toml
+[params.sovereignty]
+  onion_url = "http://youronion.onion"
+
+  [[params.sovereignty.mirrors]]
+    url = "http://youronion.onion"
+    type = "onion"
+    label = "Tor Hidden Service"
+```
+
+### NIP-05
+
+Nostr identity verification. Create `content/nostr-json.md`:
+
+```yaml
+---
+url: "/.well-known/nostr.json"
+layout: "nostr-json"
+outputs: ["json"]
+---
+```
+
+Configure in `hugo.toml`:
+
+```toml
+[params.nostr]
+  name = "_"
+  pubkey = "hex_pubkey_here"
+  relays = ["wss://relay.damus.io", "wss://nos.lol"]
+```
+
+### Onion-Location
+
+Automatic Tor Browser redirect via `<meta http-equiv="onion-location">`. Set `params.sovereignty.onion_url` in `hugo.toml`.
+
+### Footer Sovereignty Badges
+
+Automatically displays status badges (Canary, Onion, IPFS, PGP, NIP-05, Integrity) in the footer when the corresponding features are configured.
+
 ## Front Matter
+
+### Posts
 
 ```yaml
 ---
@@ -204,12 +310,13 @@ tags: ["tag1", "tag2"]
 description: "Post description for SEO and previews."
 toc: true          # Enable table of contents
 pinned: true       # Pin to top of lists and homepage
-noindex: true      # Block search engine indexing for this page
+noindex: true      # Block search engine indexing
 image: "cover.jpg" # Hero image + OG image
+sha256: ""         # Manual content hash (optional)
 ---
 ```
 
-### Portfolio Front Matter
+### Portfolio
 
 ```yaml
 ---
@@ -217,7 +324,7 @@ title: "Project Name"
 date: 2025-01-01
 description: "Project description."
 category: "automation"
-status: "active"        # Shows colored badge (active/completed)
+status: "active"        # active, completed, maintenance, paused
 stack: ["Hugo", "Go", "n8n"]
 tags: ["automation", "web"]
 links:
@@ -229,9 +336,21 @@ role: "Lead Engineer"
 ---
 ```
 
+### Archive
+
+Create `content/archive.md` to enable the archive page:
+
+```yaml
+---
+title: "Archive"
+layout: archive
+description: "All posts by year."
+---
+```
+
 ## Color Scheme
 
-Soberano is a **dark-only theme by design**. The cypherpunk aesthetic is inseparable from its dark palette. There is no light mode toggle. If you need light mode support, consider forking and adding a `[data-theme="light"]` variable set.
+Soberano is a **dark-only theme by design**. The cypherpunk aesthetic is inseparable from its dark palette.
 
 | Variable | Hex | Usage |
 |---|---|---|
@@ -241,15 +360,38 @@ Soberano is a **dark-only theme by design**. The cypherpunk aesthetic is insepar
 | `--text` | `#e8e8e8` | Primary text |
 | `--text-dim` | `#888888` | Secondary text |
 | `--green` | `#4ade80` | Success, active status |
-| `--red` | `#f87171` | Warnings |
+| `--red` | `#f87171` | Danger, expired |
+| `--yellow` | `#facc15` | Warnings |
+| `--blue` | `#60a5fa` | Info, maintenance |
 
 Override any variable by creating `assets/css/custom.css` in your project.
 
+## Privacy Modes
+
+Soberano supports three privacy levels via `params.privacy.mode`:
+
+| Mode | Generator | OG/Twitter | Canonical | JSON-LD Person | Social Footer | RSS Author |
+|------|-----------|------------|-----------|----------------|---------------|------------|
+| `standard` (default) | Yes | Yes | Yes | Full (sameAs, PGP) | All configured | Yes |
+| `hardened` | No | Yes | Yes | Reduced (no sameAs/PGP) | All configured | Yes |
+| `paranoid` | No | No | No | None (WebSite only) | Pseudonymous/federated only | No |
+
+```toml
+[params.privacy]
+  mode = "hardened"       # "standard", "hardened", or "paranoid"
+  system_fonts = false    # Use system fonts instead of self-hosted WOFF2
+```
+
+**Hardened mode** adds `no-referrer` and `x-dns-prefetch-control: off` meta tags.
+
+**Paranoid mode** strips all identifying metadata. Only pseudonymous/federated networks (Nostr, Matrix, Mastodon, XMPP, SimpleX) appear in the footer. Ideal for `.onion` sites.
+
 ## Security Headers
 
-Soberano outputs no inline styles or scripts that violate CSP. Here are recommended headers per platform:
+Soberano outputs no inline styles or scripts that violate CSP. Recommended headers for your hosting platform:
 
-### Netlify (`netlify.toml`)
+<details>
+<summary>Netlify (<code>netlify.toml</code>)</summary>
 
 ```toml
 [[headers]]
@@ -277,14 +419,12 @@ Soberano outputs no inline styles or scripts that violate CSP. Here are recommen
   for = "/fonts/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/pagefind/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
 ```
 
-### Vercel (`vercel.json`)
+</details>
+
+<details>
+<summary>Vercel (<code>vercel.json</code>)</summary>
 
 ```json
 {
@@ -300,24 +440,15 @@ Soberano outputs no inline styles or scripts that violate CSP. Here are recommen
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
         { "key": "Content-Security-Policy", "value": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'" }
       ]
-    },
-    {
-      "source": "/fonts/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    },
-    {
-      "source": "/pagefind/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
     }
   ]
 }
 ```
 
-### Cloudflare Pages (`_headers`)
+</details>
+
+<details>
+<summary>Cloudflare Pages (<code>_headers</code>)</summary>
 
 ```
 /*
@@ -337,48 +468,23 @@ Soberano outputs no inline styles or scripts that violate CSP. Here are recommen
 
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
-
-/pagefind/*
-  Cache-Control: public, max-age=31536000, immutable
 ```
 
-> **Note on Pagefind:** The CSP above already covers Pagefind — `style-src 'self'` allows Pagefind's external CSS, and `connect-src 'self'` allows search index fetching. No `'unsafe-inline'` is needed; the theme's Pagefind loader uses DOM construction instead of inline styles.
+</details>
 
-## Privacy Modes
+> **Note on Pagefind:** The CSP above covers Pagefind — `style-src 'self'` allows its CSS and `connect-src 'self'` allows search index fetching. No `'unsafe-inline'` needed.
 
-Soberano supports three privacy levels via `params.privacy.mode`:
+## Theme Extension Points
 
-| Mode | Generator | OG/Twitter | Canonical | JSON-LD Person | Social Footer | RSS Author |
-|------|-----------|------------|-----------|----------------|---------------|------------|
-| `standard` (default) | Yes | Yes | Yes | Full (sameAs, PGP) | All configured | Yes |
-| `hardened` | No | Yes | Yes | Reduced (no sameAs/PGP) | All configured | Yes |
-| `paranoid` | No | No | No | None (WebSite only) | Pseudonymous/federated only | No |
-
-```toml
-[params.privacy]
-  mode = "hardened"       # "standard", "hardened", or "paranoid"
-  system_fonts = false    # Use system fonts instead of self-hosted WOFF2
-```
-
-**Hardened mode** adds `no-referrer` and `x-dns-prefetch-control: off` meta tags. Suitable for privacy-conscious clearnet sites.
-
-**Paranoid mode** strips all identifying metadata. Only pseudonymous/federated networks (Nostr, Matrix, Mastodon, XMPP, SimpleX) appear in the footer. No author information leaks via RSS, JSON-LD, or meta tags. Ideal for `.onion` sites or maximum anonymity.
-
-### System Fonts
-
-Set `system_fonts = true` to skip loading self-hosted WOFF2 fonts. The theme falls back to system monospace and serif stacks. Useful for Tor users where every kilobyte counts.
-
-### EXIF Stripping
-
-Hugo automatically strips EXIF metadata when processing images with `Resize`, `Fill`, or `Crop`. Use page bundles for automatic image processing — no manual stripping needed.
-
-### CSS-Only Mobile Navigation
-
-The mobile navigation menu works without JavaScript via CSS `:target` selector. When JS is available, the theme progressively enhances with a toggle button for better UX.
+- `partials/head/custom.html` — inject custom head content
+- `partials/hooks/body-start.html` — inject after `<body>` open
+- `partials/hooks/body-end.html` — inject before `</body>` close
+- Feature flags via `[params.features]`
+- Design tokens via CSS custom properties in `:root`
 
 ## Requirements
 
-- Hugo **v0.152.0** or later (standard edition is fine)
+- Hugo **v0.152.0** or later (standard edition)
 - No Node.js required
 - No external dependencies
 
