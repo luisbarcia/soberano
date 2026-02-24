@@ -137,6 +137,7 @@
     {{ $hasSovereignty := or
       (site.GetPage "/canary")
       (site.GetPage "/integrity")
+      (site.GetPage "/support")
       (site.Params.sovereignty.onion_url)
       (site.Params.sovereignty.ipfs_cid)
       (site.Params.crypto.pgp_fingerprint)
@@ -194,6 +195,13 @@
         {{ T "sovereigntyNIP05" }}
       </a>
       {{ end }}{{ end }}
+      {{/* Support */}}
+      {{ with site.GetPage "/support" }}
+        <a href="{{ .RelPermalink }}" class="sovereignty-badge">
+          <span class="sovereignty-badge__dot"></span>
+          {{ T "sovereigntySupport" | default "Support" }}
+        </a>
+      {{ end }}
     </div>
     {{ end }}
 

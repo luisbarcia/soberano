@@ -145,6 +145,32 @@ disableHugoGeneratorInject = true
     pgp_key_url = "/pgp/"
     # keyoxide_url = "https://keyoxide.org/FINGERPRINT"
 
+  # --- Crypto support / donations (optional) ---
+  # Each entry is a payment method. The "privacy" field controls visibility:
+  #   "paranoid" = visible in ALL modes (privacy-preserving crypto)
+  #   "hardened" = visible in standard + hardened
+  #   "standard" = visible only in standard mode (default)
+  [[params.crypto.support]]
+    name = "Bitcoin"
+    label = "on-chain"
+    address = "bc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    description = "For larger contributions. The transaction is recorded on the blockchain."
+    privacy = "standard"
+
+  [[params.crypto.support]]
+    name = "Lightning"
+    label = "⚡"
+    address = "yourname@getalby.com"
+    description = "Instant micropayments. Read a post and found it useful? Send some sats."
+    privacy = "standard"
+
+  [[params.crypto.support]]
+    name = "Monero"
+    label = "XMR"
+    address = "4xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    description = "Private by default. Nobody knows who sent it."
+    privacy = "paranoid"
+
   # --- Sovereignty features (optional) ---
   # [params.sovereignty]
   #   onion_url = "http://youronionaddress.onion"

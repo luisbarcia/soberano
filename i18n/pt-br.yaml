@@ -92,5 +92,10 @@ pgpRotationRevoked: "REVOGADA"
 # Canary error
 canaryMissingExpires: "A página canary requer o campo expires no front matter."
 
+# Support
+supportTitle: "Apoie"
+supportEmpty: "Endereços de apoio não configurados."
+sovereigntySupport: "Apoie"
+
 # Archive
 archiveTitle: "Arquivo"

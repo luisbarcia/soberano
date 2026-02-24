@@ -1283,6 +1283,78 @@ mark,
   max-width: var(--content-width);
 }
 
+/* ---------- SUPPORT / DONATION ---------- */
+.support {
+  max-width: var(--content-width);
+}
+
+.support__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2rem;
+}
+
+.support__item {
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.support__item:hover {
+  border-color: var(--accent-mid);
+}
+
+.support__header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.support__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.support__label {
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  padding: 0.1rem 0.5rem;
+}
+
+.support__desc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.support__address {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+}
+
+.support__address code {
+  font-size: 0.75rem;
+  color: var(--accent);
+  word-break: break-all;
+  background: none;
+  padding: 0;
+}
+
+.support__empty {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
 .mirrors__list {
   display: flex;
   flex-direction: column;

@@ -92,5 +92,10 @@ pgpRotationRevoked: "REVOKED"
 # Canary error
 canaryMissingExpires: "Canary page requires expires field in front matter."
 
+# Support
+supportTitle: "Support"
+supportEmpty: "Support addresses not configured."
+sovereigntySupport: "Support"
+
 # Archive
 archiveTitle: "Archive"

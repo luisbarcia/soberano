@@ -1,0 +1,65 @@
+{{/* layouts/_default/support.html */}}
+{{/* Crypto support/donation page — data-driven from [params.crypto.support] array. */}}
+{{/* Context: single page with layout: support in front matter. */}}
+{{/* Each entry in params.crypto.support: name, address, label, description, privacy. */}}
+{{/* The "privacy" field controls visibility per mode: */}}
+{{/*   "paranoid" = visible in ALL modes (privacy-preserving crypto) */}}
+{{/*   "hardened" = visible in standard + hardened */}}
+{{/*   "standard" = visible only in standard mode (default if omitted) */}}
+
+{{ define "title" }}{{ T "supportTitle" | default "Support" }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+{{ $privacyMode := site.Params.privacy.mode | default "standard" }}
+
+<article class="support">
+  <h1>{{ T "supportTitle" | default "Support" }}</h1>
+
+  {{/* Optional intro text from content body */}}
+  {{ with .Content }}
+  <div class="post-content">
+    {{ . }}
+  </div>
+  {{ end }}
+
+  {{/* Crypto address cards — filtered by privacy mode */}}
+  {{ with site.Params.crypto.support }}
+  <div class="support__list">
+    {{ range . }}
+      {{/* Determine visibility based on privacy field */}}
+      {{ $entryPrivacy := .privacy | default "standard" }}
+      {{ $visible := false }}
+      {{ if eq $entryPrivacy "paranoid" }}
+        {{ $visible = true }}
+      {{ else if eq $entryPrivacy "hardened" }}
+        {{ $visible = ne $privacyMode "paranoid" }}
+      {{ else }}
+        {{ $visible = eq $privacyMode "standard" }}
+      {{ end }}
+
+      {{ if $visible }}
+      <div class="support__item">
+        <div class="support__header">
+          <span class="support__name">{{ .name }}</span>
+          {{ with .label }}<span class="support__label">{{ . }}</span>{{ end }}
+        </div>
+        {{ with .description }}
+        <p class="support__desc">{{ . }}</p>
+        {{ end }}
+        {{ with .address }}
+        <div class="support__address">
+          <code>{{ . }}</code>
+        </div>
+        {{ end }}
+      </div>
+      {{ end }}
+    {{ end }}
+  </div>
+  {{ else }}
+  {{/* No crypto support configured — show hint for theme users */}}
+  <p class="support__empty">{{ T "supportEmpty" | default "Support addresses not configured." }}</p>
+  {{ end }}
+</article>
+
+{{ end }}
