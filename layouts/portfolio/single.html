@@ -45,6 +45,9 @@
     {{ .Content }}
   </div>
 
+  {{/* Content hash — SHA-256 integrity verification */}}
+  {{ partial "components/content-hash.html" . }}
+
   {{/* Project footer */}}
   <footer class="post-footer">
 
