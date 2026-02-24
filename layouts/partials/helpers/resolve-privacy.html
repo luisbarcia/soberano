@@ -1,0 +1,145 @@
+{{/* layouts/partials/helpers/resolve-privacy.html */}}
+{{/* Resolves the complete privacy configuration from preset + individual flag overrides. */}}
+{{/* Context: the current page (.) — only used for partialCached compatibility.          */}}
+{{/* Returns: dict with 21 boolean flags + "preset" string.                              */}}
+{{/*                                                                                     */}}
+{{/* Usage: {{ $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}   */}}
+{{/*        {{ if $privacy.show_og }}...{{ end }}                                         */}}
+{{/*                                                                                     */}}
+{{/* Preset precedence: params.privacy.preset > params.privacy.mode (legacy) > "standard" */}}
+{{/* Flag override: isset distinguishes explicit false from absent (nil = use preset).    */}}
+
+{{/* Determine active preset — support legacy "mode" key for backwards compatibility */}}
+{{ $presetName := "standard" }}
+{{ with site.Params.privacy }}
+  {{ with .preset }}
+    {{ $presetName = . }}
+  {{ else }}
+    {{ with .mode }}
+      {{ $presetName = . }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* Define preset defaults */}}
+{{ $standard := dict
+  "show_author_meta"         true
+  "show_generator"           true
+  "show_og"                  true
+  "show_twitter_cards"       true
+  "show_canonical"           true
+  "add_referrer_policy"      false
+  "add_dns_prefetch_control" false
+  "show_person_schema"       true
+  "show_same_as"             true
+  "show_pgp_in_schema"       true
+  "show_author_in_posts"     true
+  "show_author_in_pages"     true
+  "show_social_centralized"  true
+  "show_social_federated"    true
+  "show_pgp_badge"           true
+  "show_nip05_badge"         true
+  "show_theme_credit"        true
+  "show_pgp_fingerprint"     true
+  "show_rss_generator"       true
+  "show_rss_author"          true
+  "show_sitemap_in_robots"   true
+}}
+
+{{ $hardened := dict
+  "show_author_meta"         true
+  "show_generator"           false
+  "show_og"                  true
+  "show_twitter_cards"       true
+  "show_canonical"           true
+  "add_referrer_policy"      true
+  "add_dns_prefetch_control" true
+  "show_person_schema"       true
+  "show_same_as"             false
+  "show_pgp_in_schema"       false
+  "show_author_in_posts"     true
+  "show_author_in_pages"     true
+  "show_social_centralized"  true
+  "show_social_federated"    true
+  "show_pgp_badge"           true
+  "show_nip05_badge"         true
+  "show_theme_credit"        true
+  "show_pgp_fingerprint"     true
+  "show_rss_generator"       false
+  "show_rss_author"          false
+  "show_sitemap_in_robots"   true
+}}
+
+{{ $paranoid := dict
+  "show_author_meta"         false
+  "show_generator"           false
+  "show_og"                  false
+  "show_twitter_cards"       false
+  "show_canonical"           false
+  "add_referrer_policy"      true
+  "add_dns_prefetch_control" true
+  "show_person_schema"       false
+  "show_same_as"             false
+  "show_pgp_in_schema"       false
+  "show_author_in_posts"     false
+  "show_author_in_pages"     false
+  "show_social_centralized"  false
+  "show_social_federated"    true
+  "show_pgp_badge"           false
+  "show_nip05_badge"         false
+  "show_theme_credit"        false
+  "show_pgp_fingerprint"     false
+  "show_rss_generator"       false
+  "show_rss_author"          false
+  "show_sitemap_in_robots"   false
+}}
+
+{{/* Select active preset */}}
+{{ $defaults := $standard }}
+{{ if eq $presetName "hardened" }}
+  {{ $defaults = $hardened }}
+{{ else if eq $presetName "paranoid" }}
+  {{ $defaults = $paranoid }}
+{{ end }}
+
+{{/* Apply individual flag overrides — isset distinguishes false from absent */}}
+{{/* Guard: site.Params.privacy may be nil if [params.privacy] is not in config */}}
+{{ $hasPrivacySection := false }}
+{{ with site.Params.privacy }}{{ $hasPrivacySection = true }}{{ end }}
+
+{{ $result := dict "preset" $presetName }}
+{{ $flags := slice
+  "show_author_meta"
+  "show_generator"
+  "show_og"
+  "show_twitter_cards"
+  "show_canonical"
+  "add_referrer_policy"
+  "add_dns_prefetch_control"
+  "show_person_schema"
+  "show_same_as"
+  "show_pgp_in_schema"
+  "show_author_in_posts"
+  "show_author_in_pages"
+  "show_social_centralized"
+  "show_social_federated"
+  "show_pgp_badge"
+  "show_nip05_badge"
+  "show_theme_credit"
+  "show_pgp_fingerprint"
+  "show_rss_generator"
+  "show_rss_author"
+  "show_sitemap_in_robots"
+}}
+
+{{ range $flag := $flags }}
+  {{ if and $hasPrivacySection (isset site.Params.privacy $flag) }}
+    {{/* User explicitly set this flag — use their value */}}
+    {{ $result = merge $result (dict $flag (index site.Params.privacy $flag)) }}
+  {{ else }}
+    {{/* Not set — use preset default */}}
+    {{ $result = merge $result (dict $flag (index $defaults $flag)) }}
+  {{ end }}
+{{ end }}
+
+{{ return $result }}
