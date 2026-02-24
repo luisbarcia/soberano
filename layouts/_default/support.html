@@ -11,7 +11,7 @@
 
 {{ define "main" }}
 
-{{ $privacyMode := site.Params.privacy.mode | default "standard" }}
+{{ $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}
 
 <article class="support">
   <h1>{{ T "supportTitle" | default "Support" }}</h1>
@@ -33,9 +33,9 @@
       {{ if eq $entryPrivacy "paranoid" }}
         {{ $visible = true }}
       {{ else if eq $entryPrivacy "hardened" }}
-        {{ $visible = ne $privacyMode "paranoid" }}
+        {{ $visible = ne $privacy.preset "paranoid" }}
       {{ else }}
-        {{ $visible = eq $privacyMode "standard" }}
+        {{ $visible = eq $privacy.preset "standard" }}
       {{ end }}
 
       {{ if $visible }}

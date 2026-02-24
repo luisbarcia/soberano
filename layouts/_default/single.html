@@ -36,7 +36,8 @@
     <div class="post-header__meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan 2006" }}</time>
       <span>{{ .ReadingTime }} {{ T "minRead" }}</span>
-      {{ if ne (site.Params.privacy.mode | default "standard") "paranoid" }}{{ with .Params.author }}<span>{{ . }}</span>{{ end }}{{ end }}
+      {{ $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}
+      {{ if $privacy.show_author_meta }}{{ with .Params.author }}<span>{{ . }}</span>{{ end }}{{ end }}
       {{ with .GetTerms "tags" }}
       <span class="post-header__tags">
         {{ range . }}<a href="{{ .RelPermalink }}" class="post-tag">[{{ .LinkTitle }}]</a> {{ end }}

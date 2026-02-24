@@ -9,14 +9,14 @@
     <title>{{ if eq .Title site.Title }}{{ site.Title }}{{ else }}{{ with .Title }}{{ . }} on {{ end }}{{ site.Title }}{{ end }}</title>
     <link>{{ .Permalink }}</link>
     <description>{{ with .Description }}{{ . }}{{ else }}Recent content {{ if ne .Title site.Title }}{{ with .Title }}in {{ . }} {{ end }}{{ end }}on {{ site.Title }}{{ end }}</description>
-    {{- $privacyMode := site.Params.privacy.mode | default "standard" }}
-    {{- if eq $privacyMode "standard" }}
+    {{- $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}
+    {{- if $privacy.show_rss_generator }}
     <generator>Hugo -- gohugo.io</generator>
     {{- end }}
     {{- with site.LanguageCode }}
     <language>{{ . }}</language>
     {{- end }}
-    {{- if eq $privacyMode "standard" }}
+    {{- if $privacy.show_rss_author }}
     {{- with site.Params.social.email }}
     <managingEditor>{{ . }} ({{ site.Params.author }})</managingEditor>
     {{- end }}
@@ -55,7 +55,7 @@
       <description>{{ .Summary | html }}</description>
       {{ $safeContent := replace .Content "]]>" "]]]]><![CDATA[>" }}
       {{ printf "<content:encoded><![CDATA[%s]]></content:encoded>" $safeContent | safeHTML }}
-      {{- if eq $privacyMode "standard" }}
+      {{- if $privacy.show_rss_author }}
       {{- with .Params.author }}
       <author>{{ . }}</author>
       {{- end }}
