@@ -48,10 +48,10 @@
 
   {{/* Table of Contents */}}
   {{ if and .Params.toc (gt (len .TableOfContents) 100) }}
-  <nav class="toc" aria-label="{{ T "contents" }}">
+  <div class="toc" role="navigation" aria-label="{{ T "contents" }}">
     <div class="toc__title">{{ T "contents" }}</div>
     {{ .TableOfContents }}
-  </nav>
+  </div>
   {{ end }}
 
   {{/* Content */}}

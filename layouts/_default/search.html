@@ -5,8 +5,8 @@
 
 {{ define "head" }}
 {{/* Preload Pagefind CSS to prevent flash of unstyled search UI */}}
-<link rel="preload" href="/pagefind/pagefind-ui.css" as="style">
-<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+<link rel="preload" href="{{ "/pagefind/pagefind-ui.css" | relURL }}" as="style">
+<link rel="stylesheet" href="{{ "/pagefind/pagefind-ui.css" | relURL }}">
 {{ end }}
 
 {{ define "main" }}
@@ -16,7 +16,7 @@
   </header>
 
   <div class="post-content">
-    <div id="search" data-search-unavailable="{{ T "searchUnavailable" }}"></div>
+    <div id="search" data-search-unavailable="{{ T "searchUnavailable" }}" data-pagefind-base="{{ "/pagefind/" | relURL }}"></div>
     <noscript><p>{{ T "searchRequiresJS" }}</p></noscript>
   </div>
 </article>

@@ -2,4 +2,4 @@
 {{/* NIP-05 verification endpoint — generates .well-known/nostr.json */}}
 {{/* Activated by a content file with url: "/.well-known/nostr.json" and outputs: ["json"] */}}
 {{/* Data comes from site.Params.nostr (name, pubkey, relays). */}}
-{{ with site.Params.nostr }}{{ $names := dict (.name | default "_") .pubkey }}{{ $relays := dict .pubkey (.relays | default slice) }}{{ dict "names" $names "relays" $relays | jsonify }}{{ end }}
+{{ with site.Params.nostr }}{{ $names := dict (.name | default "_") .pubkey }}{{ $relays := dict .pubkey (.relays | default slice) }}{{ dict "names" $names "relays" $relays | jsonify }}{{ else }}{{ dict "names" (dict) "relays" (dict) | jsonify }}{{ end }}

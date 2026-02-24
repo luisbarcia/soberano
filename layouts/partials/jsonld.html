@@ -49,7 +49,7 @@
 {{ end }}
 {{ with site.Params.knows_about }}{{ $person = merge $person (dict "knowsAbout" .) }}{{ end }}
 {{ $website = merge $website (dict "publisher" (dict "@id" (printf "%s#person" site.BaseURL))) }}
-{{ with site.GetPage "search" }}
+{{ with site.GetPage "/search" }}
   {{ $website = merge $website (dict "potentialAction" (dict
     "@type" "SearchAction"
     "target" (dict "@type" "EntryPoint" "urlTemplate" (printf "%ssearch/?q={search_term_string}" site.BaseURL))
@@ -162,6 +162,23 @@
 {{ with .Description }}{{ $page = merge $page (dict "description" .) }}{{ end }}
 {{ printf $jsonldTag ($page | jsonify) | safeHTML }}
 
+{{/* === TAXONOMY TERM (e.g., /tags/go/) === */}}
+{{ else if eq .Kind "term" }}
+{{ $termPage := dict
+  "@context" "https://schema.org"
+  "@type" "WebPage"
+  "name" .Title
+  "url" .Permalink
+  "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL))
+  "description" (printf "%s — %d %s" .Title (len .Pages) (T "posts"))
+}}
+{{ $aboutRefs := slice }}
+{{ range first 10 .Pages }}
+  {{ $aboutRefs = $aboutRefs | append (dict "@type" "BlogPosting" "headline" .Title "url" .Permalink) }}
+{{ end }}
+{{ if $aboutRefs }}{{ $termPage = merge $termPage (dict "about" $aboutRefs) }}{{ end }}
+{{ printf $jsonldTag ($termPage | jsonify) | safeHTML }}
+
 {{/* === FALLBACK (list pages, taxonomies) === */}}
 {{ else }}
 {{ printf $jsonldTag (dict "@context" "https://schema.org" "@type" "WebPage" "name" .Title "url" .Permalink "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL)) | jsonify) | safeHTML }}
@@ -169,20 +186,24 @@
 
 {{/* BreadcrumbList — all pages except home */}}
 {{ if not .IsHome }}
-{{ $breadcrumbs := slice (dict "@type" "ListItem" "position" 1 "name" (T "home") "item" (site.BaseURL | strings.TrimRight "/")) }}
+{{ $breadcrumbs := slice (dict "@type" "ListItem" "position" 1 "name" (T "home") "item" site.BaseURL) }}
 {{ if .IsSection }}
-  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
+  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink) }}
 {{ else if and .IsPage .Section }}
-  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" (.Section | title) "item" (printf "%s%s" site.BaseURL .Section | strings.TrimRight "/")) }}
-  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 3 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
-{{/* Taxonomy term pages: Home > Taxonomy > Term (e.g., Home > Tags > "go") */}}
-{{ else if eq .Kind "term" }}
-  {{ with .Parent }}
-  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
+  {{ $sectionPage := site.GetPage .Section }}
+  {{ with $sectionPage }}
+  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink) }}
   {{ end }}
-  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 3 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
+  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 3 "name" .Title "item" .Permalink) }}
+{{ else if eq .Kind "term" }}
+  {{ $pos := 2 }}
+  {{ with .Parent }}
+  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" $pos "name" .Title "item" .Permalink) }}
+  {{ $pos = add $pos 1 }}
+  {{ end }}
+  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" $pos "name" .Title "item" .Permalink) }}
 {{ else }}
-  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" (.Permalink | strings.TrimRight "/")) }}
+  {{ $breadcrumbs = $breadcrumbs | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink) }}
 {{ end }}
 {{ printf $jsonldTag (dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $breadcrumbs | jsonify) | safeHTML }}
 {{ end }}

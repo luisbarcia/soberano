@@ -1,6 +1,6 @@
 ---
 title: "About"
-description: "About this site and its author."
+description: "About this site and its author — background, philosophy, and contact information."
 ---
 
 This is an example about page for the Soberano theme.

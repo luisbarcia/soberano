@@ -1,7 +1,8 @@
 // Pagefind Search Loader
 // CSS is preloaded in the search template head block.
 (function() {
-  var pagefindBase = window.location.origin + '/pagefind/';
+  var el = document.getElementById('search');
+  var pagefindBase = (el && el.dataset.pagefindBase) || '/pagefind/';
 
   var js = document.createElement('script');
   js.src = pagefindBase + 'pagefind-ui.js';

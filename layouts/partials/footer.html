@@ -124,7 +124,7 @@
     {{ with site.Menus.footer }}
     <nav class="site-footer__nav" aria-label="{{ T "footerNav" }}">
       {{ range $i, $item := . }}
-        {{ if $i }}<span>·</span>{{ end }}
+        {{ if $i }}<span aria-hidden="true">·</span>{{ end }}
         <a href="{{ .URL | relURL }}"
            {{ if .Params.external }}target="_blank" rel="noopener noreferrer"{{ end }}>
           {{ .Name }}

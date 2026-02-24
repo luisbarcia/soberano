@@ -7,7 +7,7 @@
 
 {{/* Hero */}}
 <header class="hero">
-  <h1>{{ with site.Params.hero_title }}{{ . | safeHTML }}{{ else }}{{ site.Title }}{{ end }}</h1>
+  <h1>{{ with site.Params.hero_title }}{{ . | markdownify }}{{ else }}{{ site.Title }}{{ end }}</h1>
   {{ with site.Params.hero_subtitle | default site.Params.description }}
   <p class="text-dim hero__desc">{{ . }}</p>
   {{ end }}

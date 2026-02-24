@@ -11,7 +11,7 @@
 <div class="post-tags">
   {{ range .Data.Terms.Alphabetical }}
   <a href="{{ .Page.RelPermalink }}" class="post-tag">
-    [{{ .Page.Title }}] <span class="text-muted">({{ .Count }})</span>
+    [{{ .Page.Title }}] <span class="text-dim">({{ .Count }})</span>
   </a>
   {{ end }}
 </div>

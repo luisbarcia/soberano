@@ -10,7 +10,12 @@
 
   {{/* Description with fallback chain */}}
   {{ $desc := .Description | default .Summary | default site.Params.description | default "" }}
-  {{ $desc = $desc | plainify | htmlUnescape | truncate 155 "…" }}
+  {{ if and (not .Description) (eq .Kind "term") }}
+    {{ $desc = printf "%s — %d %s" .Title (len .Pages) (T "posts") }}
+  {{ else if and (not .Description) (eq .Kind "taxonomy") }}
+    {{ $desc = printf "%s — %s" (.Title | title) (site.Params.description | default site.Title) }}
+  {{ end }}
+  {{ $desc = $desc | plainify | htmlUnescape | strings.TrimRight "\n" | truncate 155 "…" }}
   <meta name="description" content="{{ $desc }}">
   {{ if ne $privacyMode "paranoid" }}
   {{ with site.Params.author }}
@@ -22,7 +27,7 @@
   {{ end }}
 
   {{/* Robots — block indexing outside production or per-page opt-out */}}
-  {{ if or .Params.noindex (not hugo.IsProduction) }}
+  {{ if or .Params.noindex (not hugo.IsProduction) (eq .Kind "404") }}
   <meta name="robots" content="noindex, nofollow">
   {{ end }}
 
@@ -40,11 +45,11 @@
   {{/* OG Image — resolved via shared partial */}}
   {{ $ogImg := partialCached "helpers/resolve-image.html" . .RelPermalink }}
 
-  {{ if ne $privacyMode "paranoid" }}
+  {{ if and (ne $privacyMode "paranoid") (ne .Kind "404") }}
   {{/* Open Graph */}}
   <meta property="og:title" content="{{ .Title }}">
   <meta property="og:description" content="{{ $desc }}">
-  <meta property="og:type" content="{{ if and .IsPage (eq .Section "posts") }}article{{ else }}website{{ end }}">
+  <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
   <meta property="og:url" content="{{ .Permalink }}">
   <meta property="og:site_name" content="{{ site.Title }}">
   <meta property="og:locale" content="{{ site.Params.og_locale | default site.Language.Lang | default "en_US" }}">
@@ -87,15 +92,14 @@
   <link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
   {{ end }}
 
-  {{/* JSON-LD Structured Data — extracted to dedicated partial */}}
-  {{ partial "jsonld.html" . }}
+  {{/* JSON-LD Structured Data — extracted to dedicated partial (skip 404) */}}
+  {{ if ne .Kind "404" }}{{ partial "jsonld.html" . }}{{ end }}
 
   <title>{{ block "title" . }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
 
   {{/* Font preloads — eliminate FOIT by preloading critical WOFF2 fonts */}}
   {{ if not site.Params.privacy.system_fonts }}
   <link rel="preload" href="{{ "fonts/space-mono-v17-latin-regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="{{ "fonts/instrument-serif-v5-latin-regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
   {{ end }}
 
   {{/* CSS — minified + fingerprinted + SRI */}}

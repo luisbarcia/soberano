@@ -1,4 +1,4 @@
 ---
 title: "Posts"
-description: "All posts, newest first."
+description: "All posts sorted by date — covering privacy, security, open source, and sovereign technology."
 ---

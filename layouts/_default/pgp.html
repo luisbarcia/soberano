@@ -16,7 +16,7 @@
   {{/* Current fingerprint highlight */}}
   {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
   <div class="pgp-key__fingerprint">
-    {{ T "pgpFingerprint" }}: {{ . }}
+    {{ T "pgpFingerprint" }}: <code>{{ . }}</code>
   </div>
   {{ end }}{{ end }}
 

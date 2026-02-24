@@ -1,5 +1,6 @@
 ---
 title: "Mirrors"
+description: "Alternative access points for this site — Tor, I2P, IPFS, and clearnet mirrors."
 layout: mirrors
 ---
 

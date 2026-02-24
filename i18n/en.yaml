@@ -89,5 +89,8 @@ pgpRotationTitle: "Key Rotation History"
 pgpRotationActive: "ACTIVE"
 pgpRotationRevoked: "REVOKED"
 
+# Canary error
+canaryMissingExpires: "Canary page requires expires field in front matter."
+
 # Archive
 archiveTitle: "Archive"

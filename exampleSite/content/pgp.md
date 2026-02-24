@@ -1,5 +1,6 @@
 ---
 title: "PGP Public Key"
+description: "PGP public key and key rotation history with proof of contemporaneity."
 layout: pgp
 rotations:
   - date: "2025-09-01"

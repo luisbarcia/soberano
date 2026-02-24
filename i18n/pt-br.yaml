@@ -1,0 +1,96 @@
+# i18n/pt-br.yaml — Soberano theme Portuguese (Brazil) strings
+
+newer: "Mais recentes →"
+older: "← Mais antigos"
+contents: "Sumário"
+tags: "Tags"
+posts: "posts"
+post: "post"
+minRead: "min de leitura"
+nothingPublished: "Nada publicado ainda."
+searchRequiresJS: "A busca requer JavaScript."
+skipToContent: "Pular para o conteúdo"
+copyCode: "Copiar"
+copied: "Copiado!"
+copyError: "Erro"
+copyAriaLabel: "Copiar código para a área de transferência"
+backToPortfolio: "← Voltar ao portfólio"
+home: "Início"
+tag: "TAG"
+related: "Relacionados"
+relatedPosts: "Posts relacionados"
+pinned: "Fixado"
+errorNotFound: "ERRO: recurso não encontrado em nenhum mirror"
+errorNotFoundMsg: "Esta página não existe. Ela pode ter sido removida, realocada ou nunca existiu."
+
+# Accessibility labels
+toggleNav: "Alternar navegação"
+mainNav: "Navegação principal"
+socialLinks: "Links sociais"
+footerNav: "Navegação do rodapé"
+pageNav: "Navegação da página"
+linkTo: "Link para"
+
+# Portfolio
+projectRole: "Função"
+projectClient: "Cliente"
+projectPeriod: "Período"
+pgpLabel: "PGP"
+
+# Homepage defaults
+homePosts: "Posts"
+homePostsMore: "Todos os posts →"
+homeProjects: "Projetos Recentes"
+homeProjectsMore: "Todos os projetos →"
+
+# Search
+searchUnavailable: "Índice de busca indisponível. Execute o pipeline de build para ativar a busca."
+
+# Sovereignty
+canaryTitle: "Warrant Canary"
+canaryLastUpdate: "Última atualização"
+canaryExpiresOn: "Expira em"
+canaryProof: "Prova de contemporaneidade"
+canaryBitcoinBlock: "Bloco Bitcoin"
+pgpTitle: "Chave Pública PGP"
+pgpFingerprint: "Impressão digital"
+pgpVerify: "Verificar no Keyoxide"
+mirrorsTitle: "Mirrors"
+mirrorOnion: "Tor"
+mirrorI2P: "I2P"
+mirrorIPFS: "IPFS"
+mirrorClearnet: "Clearnet"
+sovereigntyCanary: "Canary"
+sovereigntyOnion: "Onion"
+sovereigntyIPFS: "IPFS"
+sovereigntyPGP: "PGP"
+sovereigntyNIP05: "NIP-05"
+contentHashLabel: "Hash do conteúdo (SHA-256)"
+contentHashAriaLabel: "Hash de integridade do conteúdo"
+contentHashSigned: "assinado"
+contentHashSignedTitle: "Fornecido manualmente — pode ser assinado externamente"
+contentHashAuto: "auto"
+contentHashAutoTitle: "Calculado automaticamente no build a partir do conteúdo fonte"
+contentHashPgpLabel: "Assinatura PGP"
+sovereigntyIntegrity: "Integridade"
+
+# Integrity manifest
+integrityTitle: "Manifesto de Integridade"
+integrityGenerated: "Gerado em"
+integrityAlgorithm: "Algoritmo"
+integritySource: "Fonte"
+integrityPageCount: "páginas"
+integrityPage: "Página"
+integrityMode: "Fonte"
+integrityRawFormat: "Formato CHECKSUMS bruto"
+
+# PGP rotation
+pgpRotationTitle: "Histórico de Rotação de Chaves"
+pgpRotationActive: "ATIVA"
+pgpRotationRevoked: "REVOGADA"
+
+# Canary error
+canaryMissingExpires: "A página canary requer o campo expires no front matter."
+
+# Archive
+archiveTitle: "Arquivo"

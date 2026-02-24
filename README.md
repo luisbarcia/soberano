@@ -403,7 +403,7 @@ Soberano outputs no inline styles or scripts that violate CSP. Recommended heade
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
-    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'"
+    Content-Security-Policy = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'"
 
 [[headers]]
   for = "/css/*"
@@ -438,7 +438,7 @@ Soberano outputs no inline styles or scripts that violate CSP. Recommended heade
         { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
         { "key": "X-XSS-Protection", "value": "0" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
-        { "key": "Content-Security-Policy", "value": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'" }
+        { "key": "Content-Security-Policy", "value": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'" }
       ]
     }
   ]
@@ -458,7 +458,7 @@ Soberano outputs no inline styles or scripts that violate CSP. Recommended heade
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   X-XSS-Protection: 0
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'self'
 
 /css/*
   Cache-Control: public, max-age=31536000, immutable
@@ -472,7 +472,11 @@ Soberano outputs no inline styles or scripts that violate CSP. Recommended heade
 
 </details>
 
-> **Note on Pagefind:** The CSP above covers Pagefind — `style-src 'self'` allows its CSS and `connect-src 'self'` allows search index fetching. No `'unsafe-inline'` needed.
+> **Note on Pagefind:** The CSP above covers Pagefind — `style-src 'self'` allows its CSS, `connect-src 'self'` allows search index fetching, and `worker-src 'self'` allows its Web Workers. No `'unsafe-inline'` needed. Pagefind assets are generated at build time and served from `'self'` — they do not use SRI because their content changes with every build.
+
+> **Note on Referrer-Policy:** The examples above use `strict-origin-when-cross-origin` (browser default). If you enable **hardened** or **paranoid** privacy mode, the theme adds `<meta name="referrer" content="no-referrer">` — consider matching this in your server headers with `Referrer-Policy: no-referrer`.
+
+> **Note on JSON-LD:** Soberano uses inline `<script type="application/ld+json">` for structured data. While `type="application/ld+json"` scripts are **not executable** and pose no XSS risk, strict CSP configurations that block all inline scripts will also block these. If your CSP uses `script-src` without `'unsafe-inline'`, you have two options: (1) add a `nonce` attribute via the `head/custom.html` hook, or (2) compute the SHA-256 hash of each JSON-LD block and add it as `'sha256-<hash>'` to your `script-src` directive.
 
 ## Theme Extension Points
 

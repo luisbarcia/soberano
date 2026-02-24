@@ -1,5 +1,5 @@
 ---
 title: "Archive"
 layout: archive
-description: "All posts by year."
+description: "Complete archive of all posts organized by year — browse the full publication history."
 ---

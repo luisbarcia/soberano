@@ -19,7 +19,7 @@
           {{ $isCurrent := or ($.IsMenuCurrent "main" .) ($.HasMenuCurrent "main" .) }}
           <a class="nav__link {{ if $isCurrent }}nav__link--active{{ end }}"
              href="{{ .URL | relURL }}"
-             {{ if $isCurrent }}aria-current="{{ if $.IsMenuCurrent "main" . }}page{{ else }}true{{ end }}"{{ end }}
+             {{ if $isCurrent }}aria-current="{{ if $.IsMenuCurrent "main" . }}page{{ else }}section{{ end }}"{{ end }}
              {{ if .Params.external }}target="_blank" rel="noopener noreferrer"{{ end }}>
             {{ .Name }}
           </a>
