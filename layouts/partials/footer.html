@@ -5,96 +5,56 @@
   <div class="container">
 
     {{/* Social links row — SVG icons with sr-only labels */}}
-    {{ $privacyMode := site.Params.privacy.mode | default "standard" }}
+    {{/* Unified: centralized links (email, github, linkedin, twitter, signal) */}}
+    {{/* and federated links (nostr, mastodon, matrix, xmpp, simplex) are */}}
+    {{/* independently controlled by privacy flags. */}}
+    {{ $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}
     {{ with site.Params.social }}
-    {{ if ne $privacyMode "paranoid" }}
+    {{ $hasCentralized := and $privacy.show_social_centralized (or .email .github .linkedin .twitter .signal) }}
+    {{ $hasFederated := and $privacy.show_social_federated (or .nostr .mastodon .matrix .xmpp .simplex) }}
+    {{ if or $hasCentralized $hasFederated }}
     <nav class="site-footer__social" aria-label="{{ T "socialLinks" }}">
 
+      {{/* Centralized networks */}}
+      {{ if $privacy.show_social_centralized }}
       {{ with .email }}
       <a href="mailto:{{ . }}" title="Email">
         {{ partial "icons/email.html" }}
         <span class="sr-only">Email</span>
       </a>
       {{ end }}
-
       {{ with .github }}
       <a href="https://github.com/{{ . }}" target="_blank" rel="noopener noreferrer" title="GitHub">
         {{ partial "icons/github.html" }}
         <span class="sr-only">GitHub</span>
       </a>
       {{ end }}
-
-      {{ with .nostr }}
-      <a href="https://njump.me/{{ . }}" target="_blank" rel="noopener noreferrer" title="Nostr">
-        {{ partial "icons/nostr.html" }}
-        <span class="sr-only">Nostr</span>
-      </a>
-      {{ end }}
-
-      {{ with .mastodon }}
-      <a href="{{ . }}" target="_blank" rel="me noopener noreferrer" title="Mastodon">
-        {{ partial "icons/mastodon.html" }}
-        <span class="sr-only">Mastodon</span>
-      </a>
-      {{ end }}
-
       {{ with .linkedin }}
       <a href="https://linkedin.com/in/{{ . }}" target="_blank" rel="noopener noreferrer" title="LinkedIn">
         {{ partial "icons/linkedin.html" }}
         <span class="sr-only">LinkedIn</span>
       </a>
       {{ end }}
-
       {{ with .twitter }}
       <a href="https://twitter.com/{{ . }}" target="_blank" rel="noopener noreferrer" title="X (Twitter)">
         {{ partial "icons/twitter.html" }}
         <span class="sr-only">X (Twitter)</span>
       </a>
       {{ end }}
-
       {{ with .signal }}
       <a href="https://signal.me/#p/{{ . }}" target="_blank" rel="noopener noreferrer" title="Signal">
         {{ partial "icons/signal.html" }}
         <span class="sr-only">Signal</span>
       </a>
       {{ end }}
-
-      {{ with .matrix }}
-      <a href="https://matrix.to/#/{{ . }}" target="_blank" rel="noopener noreferrer" title="Matrix">
-        {{ partial "icons/matrix.html" }}
-        <span class="sr-only">Matrix</span>
-      </a>
       {{ end }}
 
-      {{ with .xmpp }}
-      <a href="xmpp:{{ . }}" target="_blank" rel="noopener noreferrer" title="XMPP">
-        {{ partial "icons/xmpp.html" }}
-        <span class="sr-only">XMPP</span>
-      </a>
-      {{ end }}
-
-      {{ with .simplex }}
-      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" title="SimpleX">
-        {{ partial "icons/simplex.html" }}
-        <span class="sr-only">SimpleX</span>
-      </a>
-      {{ end }}
-
-    </nav>
-    {{ else }}
-    {{/* Paranoid mode: only pseudonymous/federated networks */}}
-    {{ if or .nostr .matrix .mastodon .xmpp .simplex }}
-    <nav class="site-footer__social" aria-label="{{ T "socialLinks" }}">
+      {{/* Federated / pseudonymous networks */}}
+      {{ if $privacy.show_social_federated }}
       {{ with .nostr }}
       <a href="https://njump.me/{{ . }}" target="_blank" rel="noopener noreferrer" title="Nostr">
         {{ partial "icons/nostr.html" }}
         <span class="sr-only">Nostr</span>
-      </a>
-      {{ end }}
-      {{ with .matrix }}
-      <a href="https://matrix.to/#/{{ . }}" target="_blank" rel="noopener noreferrer" title="Matrix">
-        {{ partial "icons/matrix.html" }}
-        <span class="sr-only">Matrix</span>
       </a>
       {{ end }}
       {{ with .mastodon }}
@@ -103,6 +63,12 @@
         <span class="sr-only">Mastodon</span>
       </a>
       {{ end }}
+      {{ with .matrix }}
+      <a href="https://matrix.to/#/{{ . }}" target="_blank" rel="noopener noreferrer" title="Matrix">
+        {{ partial "icons/matrix.html" }}
+        <span class="sr-only">Matrix</span>
+      </a>
+      {{ end }}
       {{ with .xmpp }}
       <a href="xmpp:{{ . }}" target="_blank" rel="noopener noreferrer" title="XMPP">
         {{ partial "icons/xmpp.html" }}
@@ -115,9 +81,10 @@
         <span class="sr-only">SimpleX</span>
       </a>
       {{ end }}
+      {{ end }}
+
     </nav>
     {{ end }}
-    {{ end }}{{/* end privacy mode check */}}
     {{ end }}
 
     {{/* Navigation row — from menu "footer" */}}
@@ -166,8 +133,8 @@
         {{ T "sovereigntyIPFS" }}
       </span>
       {{ end }}{{ end }}
-      {{/* PGP — hidden in paranoid (fingerprint is identifying) */}}
-      {{ if ne $privacyMode "paranoid" }}
+      {{/* PGP — controlled by show_pgp_badge flag */}}
+      {{ if $privacy.show_pgp_badge }}
       {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
         {{ $pgpURL := site.Params.crypto.pgp_key_url }}
         {{ if $pgpURL }}
@@ -190,8 +157,8 @@
         {{ T "sovereigntyIntegrity" | default "Integrity" }}
       </a>
       {{ end }}
-      {{/* NIP-05 — hidden in paranoid (pubkey is identifying) */}}
-      {{ if ne $privacyMode "paranoid" }}
+      {{/* NIP-05 — controlled by show_nip05_badge flag */}}
+      {{ if $privacy.show_nip05_badge }}
       {{ with site.Params.nostr }}{{ with .pubkey }}
       <a href="https://njump.me/{{ . }}" target="_blank" rel="noopener noreferrer" class="sovereignty-badge">
         <span class="sovereignty-badge__dot"></span>
@@ -209,9 +176,9 @@
     </div>
     {{ end }}
 
-    {{/* Copyright row — theme attribution (suppressed in paranoid mode) */}}
+    {{/* Copyright row — theme attribution controlled by show_theme_credit */}}
     <div class="site-footer__inner">
-      {{ if ne $privacyMode "paranoid" }}
+      {{ if $privacy.show_theme_credit }}
       <span>
         <a class="site-footer__theme-link" href="https://github.com/luisbarcia/soberano" target="_blank" rel="noopener noreferrer">Soberano</a> · {{ now.Year }}
       </span>
@@ -220,7 +187,8 @@
       {{ end }}
     </div>
 
-    {{ if ne $privacyMode "paranoid" }}
+    {{/* PGP fingerprint in footer — controlled by show_pgp_fingerprint */}}
+    {{ if $privacy.show_pgp_fingerprint }}
     {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
     <div class="site-footer__pgp">{{ T "pgpLabel" }}: {{ . }}</div>
     {{ end }}{{ end }}
