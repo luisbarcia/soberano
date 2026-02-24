@@ -1,9 +1,51 @@
 {{/* layouts/partials/components/content-hash.html */}}
-{{/* Displays SHA-256 content hash if present in front matter. */}}
-{{/* Context: expects . to be a Page with .Params.sha256. */}}
-{{ with .Params.sha256 }}
-<div class="content-hash">
-  <span class="content-hash__label">{{ T "contentHashLabel" }}:</span>
-  <span class="content-hash__value">{{ . }}</span>
-</div>
+{{/* Displays SHA-256 content hash with auto-compute fallback and optional PGP signature. */}}
+{{/* Context (.): Page object */}}
+{{/* Front matter params: */}}
+{{/*   sha256         — Manual SHA-256 hash. If set, displayed with "signed" badge. */}}
+{{/*   pgp_signature  — Detached PGP signature. Shown in collapsible <pre> block. */}}
+{{/* If sha256 is absent, hash is auto-computed from .RawContent at build time. */}}
+{{/* The copy button on <pre> blocks is provided by main.js (no extra JS needed). */}}
+
+{{ if .IsPage }}
+  {{ $page := . }}
+  {{ $hash := "" }}
+  {{ $mode := "auto" }}
+
+  {{ with .Params.sha256 }}
+    {{ $hash = . }}
+    {{ $mode = "signed" }}
+  {{ else }}
+    {{ with $page.RawContent }}
+      {{ $hash = sha256 . }}
+    {{ end }}
+  {{ end }}
+
+  {{ with $hash }}
+  <div class="content-hash" aria-label="{{ T "contentHashAriaLabel" | default "Content integrity hash" }}">
+    <div class="content-hash__header">
+      <span class="content-hash__label">{{ T "contentHashLabel" }}:</span>
+      {{ if eq $mode "signed" }}
+      <span class="content-hash__badge content-hash__badge--signed" title="{{ T "contentHashSignedTitle" | default "Manually provided — may be externally signed" }}">
+        {{ T "contentHashSigned" | default "signed" }}
+      </span>
+      {{ else }}
+      <span class="content-hash__badge content-hash__badge--auto" title="{{ T "contentHashAutoTitle" | default "Auto-computed at build time from source content" }}">
+        {{ T "contentHashAuto" | default "auto" }}
+      </span>
+      {{ end }}
+    </div>
+    <code class="content-hash__value">{{ . }}</code>
+
+    {{/* PGP detached signature — copyable via main.js copy button on <pre> */}}
+    {{ with $page.Params.pgp_signature }}
+    <details class="content-hash__pgp">
+      <summary class="content-hash__pgp-toggle">
+        {{ T "contentHashPgpLabel" | default "PGP Signature" }}
+      </summary>
+      <pre class="content-hash__pgp-block"><code>{{ . }}</code></pre>
+    </details>
+    {{ end }}
+  </div>
+  {{ end }}
 {{ end }}

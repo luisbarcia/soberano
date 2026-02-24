@@ -136,6 +136,7 @@
     {{/* Sovereignty indicators — public transparency badges */}}
     {{ $hasSovereignty := or
       (site.GetPage "/canary")
+      (site.GetPage "/integrity")
       (site.Params.sovereignty.onion_url)
       (site.Params.sovereignty.ipfs_cid)
       (site.Params.crypto.pgp_fingerprint)
@@ -179,6 +180,13 @@
         </span>
         {{ end }}
       {{ end }}{{ end }}
+      {{/* Integrity manifest */}}
+      {{ with site.GetPage "/integrity" }}
+      <a href="{{ .RelPermalink }}" class="sovereignty-badge">
+        <span class="sovereignty-badge__dot"></span>
+        {{ T "sovereigntyIntegrity" | default "Integrity" }}
+      </a>
+      {{ end }}
       {{/* NIP-05 */}}
       {{ with site.Params.nostr }}{{ with .pubkey }}
       <a href="https://njump.me/{{ . }}" target="_blank" rel="noopener noreferrer" class="sovereignty-badge">

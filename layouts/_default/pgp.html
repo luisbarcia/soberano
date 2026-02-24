@@ -1,7 +1,10 @@
 {{/* layouts/_default/pgp.html */}}
-{{/* PGP public key page layout. */}}
+{{/* PGP public key page layout with optional key rotation history. */}}
 {{/* Context: single page with layout: pgp in front matter. */}}
 {{/* Uses site.Params.crypto for fingerprint and keyoxide_url. */}}
+{{/* Optional front matter: */}}
+{{/*   rotations — array of {date, fingerprint, status, bitcoin_block, bitcoin_hash} */}}
+{{/*   Each rotation entry documents a key change with proof of contemporaneity. */}}
 
 {{ define "title" }}{{ T "pgpTitle" }} · {{ site.Title }}{{ end }}
 
@@ -10,7 +13,7 @@
 <article class="pgp-key">
   <h1>{{ T "pgpTitle" }}</h1>
 
-  {{/* Fingerprint highlight */}}
+  {{/* Current fingerprint highlight */}}
   {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
   <div class="pgp-key__fingerprint">
     {{ T "pgpFingerprint" }}: {{ . }}
@@ -26,7 +29,37 @@
   {{ end }}
   {{ end }}
 
-  {{/* Full key — rendered from markdown content */}}
+  {{/* Key rotation timeline (optional) */}}
+  {{ with .Params.rotations }}
+  <div class="pgp-rotation">
+    <h2 class="pgp-rotation__title">{{ T "pgpRotationTitle" | default "Key Rotation History" }}</h2>
+    {{ range . }}
+    <div class="pgp-rotation__entry pgp-rotation__entry--{{ .status | default "revoked" }}">
+      <div class="pgp-rotation__header">
+        <span class="pgp-rotation__date">{{ .date }}</span>
+        {{ if eq .status "active" }}
+        <span class="pgp-rotation__status pgp-rotation__status--active">{{ T "pgpRotationActive" | default "ACTIVE" }}</span>
+        {{ else }}
+        <span class="pgp-rotation__status pgp-rotation__status--revoked">{{ T "pgpRotationRevoked" | default "REVOKED" }}</span>
+        {{ end }}
+      </div>
+      {{ with .fingerprint }}
+      <code class="pgp-rotation__fingerprint">{{ . }}</code>
+      {{ end }}
+      {{/* Bitcoin block proof of contemporaneity */}}
+      {{ if and .bitcoin_block .bitcoin_hash }}
+      <div class="pgp-rotation__proof">
+        <span class="pgp-rotation__proof-label">{{ T "canaryProof" | default "Proof of contemporaneity" }}:</span>
+        {{ T "canaryBitcoinBlock" | default "Bitcoin block" }}: <strong>#{{ .bitcoin_block }}</strong>
+        — <a href="https://mempool.space/block/{{ .bitcoin_hash }}" target="_blank" rel="noopener noreferrer">{{ .bitcoin_hash | truncate 24 "..." }}</a>
+      </div>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  {{/* Full key + signed statements — rendered from markdown content */}}
   {{/* The copy button is automatically added by main.js on <pre> blocks */}}
   <div class="pgp-key__block post-content">
     {{ .Content }}

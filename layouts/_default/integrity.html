@@ -1,0 +1,95 @@
+{{/* layouts/_default/integrity.html */}}
+{{/* Integrity manifest — lists all regular pages with SHA-256 hashes. */}}
+{{/* Context (.): Page with layout: integrity in front matter. */}}
+{{/* Hashes: manual (front matter sha256) > auto-computed (sha256 .RawContent). */}}
+{{/* Usage: Create content/integrity.md with layout: integrity */}}
+
+{{ define "title" }}{{ T "integrityTitle" | default "Integrity Manifest" }} · {{ site.Title }}{{ end }}
+
+{{ define "main" }}
+
+<article class="integrity-manifest">
+  <h1>{{ T "integrityTitle" | default "Integrity Manifest" }}</h1>
+
+  {{ with .Content }}
+  <div class="post-content">
+    {{ . }}
+  </div>
+  {{ end }}
+
+  {{/* Build metadata */}}
+  <div class="integrity-manifest__meta">
+    <span>{{ T "integrityGenerated" | default "Generated" }}: <strong><time datetime="{{ now.Format "2006-01-02T15:04:05Z07:00" }}">{{ now.Format "02 Jan 2006 15:04 MST" }}</time></strong></span>
+    <span>{{ T "integrityAlgorithm" | default "Algorithm" }}: <strong>SHA-256</strong></span>
+    <span>{{ T "integritySource" | default "Source" }}: <strong>RawContent</strong></span>
+  </div>
+
+  {{/* Collect pages — exclude self */}}
+  {{ $allPages := where site.RegularPages "Kind" "page" }}
+  {{ $pages := where $allPages ".RelPermalink" "!=" .RelPermalink }}
+  {{ $sorted := sort $pages "Section" }}
+
+  <div class="integrity-manifest__count">
+    {{ len $pages }} {{ T "integrityPageCount" | default "pages" }}
+  </div>
+
+  {{/* Hash table */}}
+  <div class="integrity-manifest__table" role="table" aria-label="{{ T "integrityTitle" | default "Integrity Manifest" }}">
+    <div class="integrity-manifest__row integrity-manifest__row--header" role="row">
+      <span class="integrity-manifest__cell integrity-manifest__cell--hash" role="columnheader">SHA-256</span>
+      <span class="integrity-manifest__cell integrity-manifest__cell--page" role="columnheader">{{ T "integrityPage" | default "Page" }}</span>
+      <span class="integrity-manifest__cell integrity-manifest__cell--mode" role="columnheader">{{ T "integrityMode" | default "Source" }}</span>
+    </div>
+
+    {{ $currentSection := "" }}
+    {{ range $sorted }}
+      {{ $page := . }}
+
+      {{/* Section separator */}}
+      {{ if and .Section (ne .Section $currentSection) }}
+        {{ $currentSection = .Section }}
+        <div class="integrity-manifest__section" role="row">
+          <span role="cell">// {{ $currentSection }}</span>
+        </div>
+      {{ end }}
+
+      {{/* Compute or use manual hash */}}
+      {{ $hash := "" }}
+      {{ $mode := "auto" }}
+      {{ with .Params.sha256 }}
+        {{ $hash = . }}
+        {{ $mode = "signed" }}
+      {{ else }}
+        {{ with $page.RawContent }}
+          {{ $hash = sha256 . }}
+        {{ end }}
+      {{ end }}
+
+      {{ with $hash }}
+      <div class="integrity-manifest__row" role="row">
+        <code class="integrity-manifest__cell integrity-manifest__cell--hash" role="cell" title="{{ . }}">{{ . }}</code>
+        <span class="integrity-manifest__cell integrity-manifest__cell--page" role="cell">
+          <a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a>
+        </span>
+        <span class="integrity-manifest__cell integrity-manifest__cell--mode" role="cell">
+          {{ if eq $mode "signed" }}
+          <span class="content-hash__badge content-hash__badge--signed">{{ T "contentHashSigned" | default "signed" }}</span>
+          {{ else }}
+          <span class="content-hash__badge content-hash__badge--auto">{{ T "contentHashAuto" | default "auto" }}</span>
+          {{ end }}
+        </span>
+      </div>
+      {{ end }}
+    {{ end }}
+  </div>
+
+  {{/* Raw CHECKSUMS format — copyable */}}
+  <details class="integrity-manifest__raw">
+    <summary>{{ T "integrityRawFormat" | default "Raw CHECKSUMS format" }}</summary>
+    <pre><code>{{ range $pages }}{{ $p := . }}{{ $h := "" }}{{ with .Params.sha256 }}{{ $h = . }}{{ else }}{{ with $p.RawContent }}{{ $h = sha256 . }}{{ end }}{{ end }}{{ with $h }}{{ . }}  {{ $p.RelPermalink }}
+{{ end }}{{ end }}</code></pre>
+  </details>
+
+</article>
+
+{{ end }}
