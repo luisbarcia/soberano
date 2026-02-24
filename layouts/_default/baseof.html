@@ -3,8 +3,8 @@
 <!DOCTYPE html>
 <html lang="{{ site.Language.Lang | default "en" }}" {{ if site.Params.privacy.system_fonts }}data-system-fonts{{ end }}>
 <head>
-  {{/* Privacy mode: standard (default), hardened, or paranoid */}}
-  {{ $privacyMode := site.Params.privacy.mode | default "standard" }}
+  {{/* Privacy — resolved from preset + individual flag overrides */}}
+  {{ $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -17,12 +17,12 @@
   {{ end }}
   {{ $desc = $desc | plainify | htmlUnescape | strings.TrimRight "\n" | truncate 155 "…" }}
   <meta name="description" content="{{ $desc }}">
-  {{ if ne $privacyMode "paranoid" }}
+  {{ if $privacy.show_author_meta }}
   {{ with site.Params.author }}
   <meta name="author" content="{{ . }}">
   {{ end }}
   {{ end }}
-  {{ if eq $privacyMode "standard" }}
+  {{ if $privacy.show_generator }}
   <meta name="generator" content="Hugo {{ hugo.Version }}">
   {{ end }}
 
@@ -31,9 +31,11 @@
   <meta name="robots" content="noindex, nofollow">
   {{ end }}
 
-  {{/* Privacy headers for hardened/paranoid modes */}}
-  {{ if ne $privacyMode "standard" }}
+  {{/* Privacy headers — individually controllable */}}
+  {{ if $privacy.add_referrer_policy }}
   <meta name="referrer" content="no-referrer">
+  {{ end }}
+  {{ if $privacy.add_dns_prefetch_control }}
   <meta http-equiv="x-dns-prefetch-control" content="off">
   {{ end }}
 
@@ -45,8 +47,8 @@
   {{/* OG Image — resolved via shared partial */}}
   {{ $ogImg := partialCached "helpers/resolve-image.html" . .RelPermalink }}
 
-  {{ if and (ne $privacyMode "paranoid") (ne .Kind "404") }}
   {{/* Open Graph */}}
+  {{ if and $privacy.show_og (ne .Kind "404") }}
   <meta property="og:title" content="{{ .Title }}">
   <meta property="og:description" content="{{ $desc }}">
   <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
@@ -70,18 +72,22 @@
   {{ else if or (strings.HasSuffix . ".jpg") (strings.HasSuffix . ".jpeg") }}<meta property="og:image:type" content="image/jpeg">
   {{ end }}
   {{ end }}
+  {{ end }}
 
   {{/* Twitter Card */}}
+  {{ if and $privacy.show_twitter_cards (ne .Kind "404") }}
   <meta name="twitter:card" content="{{ if $ogImg }}summary_large_image{{ else }}summary{{ end }}">
   <meta name="twitter:title" content="{{ .Title }}">
   <meta name="twitter:description" content="{{ $desc }}">
   {{ with $ogImg }}<meta name="twitter:image" content="{{ . }}">
   <meta name="twitter:image:alt" content="{{ $desc }}">{{ end }}
   {{ with site.Params.social.twitter }}<meta name="twitter:site" content="@{{ . }}">{{ end }}
+  {{ end }}
 
   {{/* Canonical URL */}}
+  {{ if and $privacy.show_canonical (ne .Kind "404") }}
   <link rel="canonical" href="{{ .Permalink }}">
-  {{ end }}{{/* end ne privacyMode paranoid */}}
+  {{ end }}
 
   {{/* Hreflang for multilingual sites */}}
   {{ if .IsTranslated }}
