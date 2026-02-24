@@ -3,14 +3,14 @@
 {{/* Context: the current page (.). Reads site.Params for all personal data.    */}}
 {{/* Uses printf + safeHTML to avoid Go template JS-context double-encoding.    */}}
 
-{{ $privacyMode := site.Params.privacy.mode | default "standard" }}
+{{ $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}
 
 {{/* OG Image — resolved via shared partial */}}
 {{ $ogImg := partialCached "helpers/resolve-image.html" . .RelPermalink }}
 
-{{/* Build sameAs array from social params (only used in standard mode) */}}
+{{/* Build sameAs array from social params (controlled by show_same_as flag) */}}
 {{ $sameAs := slice }}
-{{ if eq $privacyMode "standard" }}
+{{ if $privacy.show_same_as }}
 {{ with site.Params.social }}
   {{ with .github }}{{ $sameAs = $sameAs | append (printf "https://github.com/%s" .) }}{{ end }}
   {{ with .mastodon }}{{ $sameAs = $sameAs | append . }}{{ end }}
@@ -33,16 +33,18 @@
 }}
 {{ with site.Params.description }}{{ $website = merge $website (dict "description" .) }}{{ end }}
 
-{{ if eq $privacyMode "paranoid" }}
-{{/* Paranoid mode: minimal WebSite only, no Person */}}
+{{ if not $privacy.show_person_schema }}
+{{/* No Person schema — minimal WebSite only */}}
 {{ printf $jsonldTag (dict "@context" "https://schema.org" "@graph" (slice $website) | jsonify) | safeHTML }}
 {{ else }}
-{{/* Standard/hardened: include Person */}}
+{{/* Include Person schema */}}
 {{ $person := dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL }}
 {{ with site.Params.description }}{{ $person = merge $person (dict "description" .) }}{{ end }}
 {{ with site.Params.job_title }}{{ $person = merge $person (dict "jobTitle" .) }}{{ end }}
-{{ if eq $privacyMode "standard" }}
+{{ if $privacy.show_same_as }}
   {{ if $sameAs }}{{ $person = merge $person (dict "sameAs" $sameAs) }}{{ end }}
+{{ end }}
+{{ if $privacy.show_pgp_in_schema }}
   {{ with site.Params.crypto }}{{ with .pgp_fingerprint }}
     {{ $person = merge $person (dict "identifier" (dict "@type" "PropertyValue" "propertyID" "PGP Fingerprint" "value" .)) }}
   {{ end }}{{ end }}
@@ -58,7 +60,7 @@
 {{ end }}
 
 {{ printf $jsonldTag (dict "@context" "https://schema.org" "@graph" (slice $website $person) | jsonify) | safeHTML }}
-{{ end }}{{/* end privacy mode check */}}
+{{ end }}{{/* end person schema check */}}
 
 {{/* === BLOG POSTS === */}}
 {{ else if and .IsPage (eq .Section "posts") }}
@@ -74,7 +76,7 @@
   "isPartOf" (dict "@type" "Blog" "@id" (printf "%sposts/#blog" site.BaseURL) "name" (printf "%s Blog" site.Title) "url" (printf "%sposts/" site.BaseURL))
   "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
 }}
-{{ if ne $privacyMode "paranoid" }}
+{{ if $privacy.show_author_in_posts }}
   {{ $post = merge $post (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL)) }}
   {{ $post = merge $post (dict "publisher" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
 {{ end }}
@@ -95,7 +97,7 @@
   "url" .Permalink
   "dateCreated" (.Date.Format "2006-01-02")
 }}
-{{ if ne $privacyMode "paranoid" }}
+{{ if $privacy.show_author_in_posts }}
   {{ $work = merge $work (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
 {{ end }}
 {{ with $ogImg }}{{ $work = merge $work (dict "image" .) }}{{ end }}
@@ -106,11 +108,11 @@
 
 {{/* === ABOUT PAGE (nil-safe .File check) === */}}
 {{ else if and .IsPage .File (eq .File.ContentBaseName "about") }}
-{{ if ne $privacyMode "paranoid" }}
+{{ if $privacy.show_person_schema }}
 {{ $aboutPerson := dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title) "url" site.BaseURL }}
 {{ with site.Params.description }}{{ $aboutPerson = merge $aboutPerson (dict "description" .) }}{{ end }}
 {{ with site.Params.job_title }}{{ $aboutPerson = merge $aboutPerson (dict "jobTitle" .) }}{{ end }}
-{{ if eq $privacyMode "standard" }}
+{{ if $privacy.show_same_as }}
   {{ if $sameAs }}{{ $aboutPerson = merge $aboutPerson (dict "sameAs" $sameAs) }}{{ end }}
 {{ end }}
 {{ with site.Params.knows_about }}{{ $aboutPerson = merge $aboutPerson (dict "knowsAbout" .) }}{{ end }}
@@ -156,7 +158,7 @@
   "url" .Permalink
   "isPartOf" (dict "@id" (printf "%s#website" site.BaseURL))
 }}
-{{ if ne $privacyMode "paranoid" }}
+{{ if $privacy.show_author_in_pages }}
   {{ $page = merge $page (dict "author" (dict "@type" "Person" "@id" (printf "%s#person" site.BaseURL) "name" (site.Params.author | default site.Title))) }}
 {{ end }}
 {{ with .Description }}{{ $page = merge $page (dict "description" .) }}{{ end }}
