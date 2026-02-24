@@ -62,8 +62,32 @@
   {{/* Content hash — SHA-256 integrity verification */}}
   {{ partial "components/content-hash.html" . }}
 
-  {{/* Post Footer — tags + related */}}
+  {{/* Post Footer — nav + related */}}
   <footer class="post-footer">
+
+    {{/* Prev / Next navigation */}}
+    {{ if eq .Section "posts" }}
+    {{ $older := .PrevInSection }}
+    {{ $newer := .NextInSection }}
+    {{ if or $older $newer }}
+    <nav class="post-nav" aria-label="{{ T "pageNav" }}">
+      {{ with $older }}
+      <a href="{{ .RelPermalink }}" class="post-nav__link post-nav__link--prev">
+        <span class="post-nav__label">{{ T "older" }}</span>
+        <span class="post-nav__title">{{ .Title }}</span>
+      </a>
+      {{ else }}
+      <span class="post-nav__link post-nav__link--prev post-nav__link--disabled"></span>
+      {{ end }}
+      {{ with $newer }}
+      <a href="{{ .RelPermalink }}" class="post-nav__link post-nav__link--next">
+        <span class="post-nav__label">{{ T "newer" }}</span>
+        <span class="post-nav__title">{{ .Title }}</span>
+      </a>
+      {{ end }}
+    </nav>
+    {{ end }}
+    {{ end }}
 
     {{/* Related posts */}}
     {{ if eq .Section "posts" }}

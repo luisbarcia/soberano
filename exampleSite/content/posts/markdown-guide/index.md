@@ -94,6 +94,24 @@ Privacy is not a feature — it is a right.
 Sovereignty starts with your own infrastructure.
 {{< /manifesto >}}
 
+### Callout
+
+{{< callout type="info" title="Note" >}}
+This is an informational callout. Use it for tips, references, or general guidance.
+{{< /callout >}}
+
+{{< callout type="warning" title="Heads up" >}}
+This action may have unintended side effects. Review your configuration before proceeding.
+{{< /callout >}}
+
+{{< callout type="danger" title="Critical" >}}
+This operation is **irreversible**. Make sure you have a backup before running `rm -rf /`.
+{{< /callout >}}
+
+{{< callout type="info" >}}
+Callouts without a title work too — they just show the content with the accent border.
+{{< /callout >}}
+
 ### Card
 
 {{< card number="01" title="Self-Hosting" role="Infrastructure" >}}

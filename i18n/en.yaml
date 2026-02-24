@@ -88,3 +88,6 @@ integrityRawFormat: "Raw CHECKSUMS format"
 pgpRotationTitle: "Key Rotation History"
 pgpRotationActive: "ACTIVE"
 pgpRotationRevoked: "REVOKED"
+
+# Archive
+archiveTitle: "Archive"

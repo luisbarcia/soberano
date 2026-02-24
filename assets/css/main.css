@@ -66,7 +66,9 @@
   --red: #f87171;
   --red-dim: #f8717122;
   --yellow: #facc15;
+  --yellow-dim: #facc1522;
   --blue: #60a5fa;
+  --blue-dim: #60a5fa22;
   --mono: 'Space Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace;
   --serif: 'Instrument Serif', 'Playfair Display', 'Georgia', serif;
   --content-width: 780px;
@@ -662,6 +664,60 @@ figcaption {
   line-height: 1.5;
 }
 
+/* ---------- CALLOUT BLOCK ---------- */
+.callout {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
+  border-left: 2px solid var(--blue);
+  background: linear-gradient(135deg, var(--blue-dim), transparent);
+}
+
+.callout--warning {
+  border-color: var(--yellow);
+  background: linear-gradient(135deg, var(--yellow-dim), transparent);
+}
+
+.callout--danger {
+  border-color: var(--red);
+  background: linear-gradient(135deg, var(--red-dim), transparent);
+}
+
+.callout__icon {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.8;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+
+.callout--warning .callout__icon { color: var(--yellow); }
+.callout--danger .callout__icon { color: var(--red); }
+
+.callout__title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 0.5rem;
+}
+
+.callout--warning .callout__title { color: var(--yellow); }
+.callout--danger .callout__title { color: var(--red); }
+
+.callout__content {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.callout__content p { margin: 0; }
+.callout__content p + p { margin-top: 0.5rem; }
+.callout__content code { font-size: 0.85em; }
+.callout__content a { color: inherit; text-decoration: underline; }
+
 /* ---------- MANIFESTO BLOCK ---------- */
 .manifesto {
   margin: 4rem 0;
@@ -862,30 +918,31 @@ mark,
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px;
+  margin-bottom: 3rem;
 }
 
-.post-nav__item {
+.post-nav__link {
   background: var(--surface);
   border: 1px solid var(--border);
   padding: 1.25rem;
   text-decoration: none;
-  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: border-color 0.3s;
 }
 
-.post-nav__item:hover {
-  border-color: var(--accent-mid);
-}
+.post-nav__link:hover { border-color: var(--accent-mid); }
 
-.post-nav__item--next {
-  text-align: right;
-}
+.post-nav__link--next { text-align: right; }
+
+.post-nav__link--disabled { visibility: hidden; }
 
 .post-nav__label {
   font-size: 0.65rem;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 0.3rem;
 }
 
 .post-nav__title {
@@ -894,8 +951,24 @@ mark,
   color: var(--text);
 }
 
+.post-nav__link:hover .post-nav__title { color: var(--accent); }
 
+@media (max-width: 480px) {
+  .post-nav { grid-template-columns: 1fr; }
+  .post-nav__link--next { text-align: left; }
+  .post-nav__link--disabled { display: none; }
+}
 
+/* ---------- ARCHIVE ---------- */
+.archive__year { margin-bottom: 3rem; }
+
+.archive__year-title {
+  font-size: 1.5rem;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
 
 /* ---------- TOC (Table of Contents) ---------- */
 .toc {
@@ -1049,11 +1122,19 @@ mark,
    PORTFOLIO META — Footer metadata section in portfolio single
    ========================================================================== */
 
+.portfolio-links {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
 .portfolio-meta {
-  margin-bottom: 1rem;
   font-family: var(--mono);
   font-size: 0.8rem;
   color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 .portfolio-meta__label {
@@ -1062,24 +1143,8 @@ mark,
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   margin-right: 0.5rem;
-}
-
-.portfolio-meta__items {
-  color: var(--text-muted);
-}
-
-.portfolio-meta__items a {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-
-.portfolio-meta__items a:hover {
-  color: var(--accent);
-}
-
-.portfolio-meta .action-link {
-  margin-right: 1.2rem;
+  min-width: 8ch;
+  display: inline-block;
 }
 
 .portfolio-meta--back {

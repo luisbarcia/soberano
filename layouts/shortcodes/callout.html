@@ -1,0 +1,15 @@
+{{/* layouts/shortcodes/callout.html */}}
+{{/* Usage: {{< callout type="warning" title="Heads up" >}}Content here{{< /callout >}} */}}
+{{/* Params: type (info|warning|danger, default "info"), title (optional)                */}}
+
+{{ $type := .Get "type" | default "info" }}
+{{ $title := .Get "title" }}
+{{ $icons := dict "info" "[i]" "warning" "[!]" "danger" "[x]" }}
+{{ $icon := index $icons $type | default "[i]" }}
+<div class="callout callout--{{ $type }}" role="note">
+  <div class="callout__icon" aria-hidden="true">{{ $icon }}</div>
+  <div class="callout__body">
+    {{ with $title }}<div class="callout__title">{{ . }}</div>{{ end }}
+    <div class="callout__content">{{ .Inner | markdownify }}</div>
+  </div>
+</div>

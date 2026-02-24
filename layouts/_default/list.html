@@ -38,16 +38,16 @@
 <nav class="pagination" aria-label="{{ T "pageNav" }}">
   <div class="post-nav">
     {{ if $paginator.HasPrev }}
-    <a href="{{ $paginator.Prev.URL }}" class="post-nav__item" rel="prev">
-      <div class="post-nav__label">{{ T "newer" }}</div>
+    <a href="{{ $paginator.Prev.URL }}" class="post-nav__link" rel="prev">
+      <span class="post-nav__label">{{ T "newer" }}</span>
     </a>
     {{ else }}
     <div></div>
     {{ end }}
 
     {{ if $paginator.HasNext }}
-    <a href="{{ $paginator.Next.URL }}" class="post-nav__item post-nav__item--next" rel="next">
-      <div class="post-nav__label">{{ T "older" }}</div>
+    <a href="{{ $paginator.Next.URL }}" class="post-nav__link post-nav__link--next" rel="next">
+      <span class="post-nav__label">{{ T "older" }}</span>
     </a>
     {{ else }}
     <div></div>
