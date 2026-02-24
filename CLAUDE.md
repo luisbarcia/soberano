@@ -137,16 +137,32 @@ When upgrading to Hugo v0.156.0+, these functions/configs MUST be replaced:
 - Debug with `{{ debug.Dump . }}` or `{{ warnf "msg: %v" .Variable }}`
 - Use `templates.Defer` when processing needs to happen after all content is rendered
 
-## Privacy Modes (`params.privacy.mode`)
-Three-tier privacy system controlled via `[params.privacy]`:
-- **standard** (default): Full metadata, backwards-compatible
+## Privacy System (`params.privacy`)
+Modular privacy architecture using **preset + flag overrides**. Presets provide sensible defaults; 21 individual boolean flags allow granular customization.
+
+**Architecture:**
+- Central resolver: `partials/helpers/resolve-privacy.html` (uses `partialCached`, returns `dict`)
+- All templates call: `{{ $privacy := partialCached "helpers/resolve-privacy.html" . "privacy" }}`
+- Backwards-compatible: legacy `params.privacy.mode` still works as fallback for `preset`
+
+**Presets:**
+- **standard** (default): Full metadata, all social links, complete JSON-LD
 - **hardened**: No generator, no-referrer, reduced JSON-LD (no sameAs/PGP)
-- **paranoid**: No OG/Twitter/canonical, no Person schema, only pseudonymous/federated networks in footer
+- **paranoid**: No OG/Twitter/canonical, no Person schema, only federated networks
+
+**Flag categories:**
+- **Head meta**: `show_author_meta`, `show_generator`, `show_og`, `show_twitter_cards`, `show_canonical`
+- **Security headers**: `add_referrer_policy`, `add_dns_prefetch_control`
+- **JSON-LD**: `show_person_schema`, `show_same_as`, `show_pgp_in_schema`, `show_author_in_posts`, `show_author_in_pages`
+- **Footer**: `show_social_centralized`, `show_social_federated`, `show_pgp_badge`, `show_nip05_badge`, `show_theme_credit`, `show_pgp_fingerprint`
+- **Feeds/SEO**: `show_rss_generator`, `show_rss_author`, `show_sitemap_in_robots`
+
+**Override pattern:** `isset` distinguishes explicit `false` from absent (nil = use preset default).
 
 Related params:
 - `params.privacy.system_fonts`: Use system font stack instead of self-hosted WOFF2
 - Mobile nav works without JS via CSS `:target` selector (progressive enhancement)
-- `baseof.html` defines `$privacyMode` variable used throughout templates
+- `support.html` per-entry visibility uses `$privacy.preset` for tier comparison
 
 ## Sovereignty Features (`params.sovereignty`, `params.nostr`)
 Optional cypherpunk features activated via `hugo.toml`:

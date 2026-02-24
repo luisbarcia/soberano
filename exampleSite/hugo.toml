@@ -193,19 +193,48 @@ disableHugoGeneratorInject = true
   #   pubkey = "hex_pubkey_here"
   #   relays = ["wss://relay.damus.io", "wss://nos.lol"]
 
-  # --- Privacy modes ---
-  # Controls metadata exposure. Three modes:
-  #   "standard" (default) — Full metadata: generator tag, OG/Twitter cards,
-  #     canonical URLs, complete JSON-LD Person schema with sameAs/PGP.
-  #   "hardened" — No generator meta, adds no-referrer and dns-prefetch-off.
-  #     JSON-LD Person omits sameAs social links and PGP.
-  #   "paranoid" — Maximum privacy. No OG/Twitter/canonical,
-  #     no Person schema, no author in RSS, only pseudonymous/federated
-  #     social links (Nostr/Matrix/Mastodon/XMPP/SimpleX) in footer.
-  #     Minimal JSON-LD. Ideal for .onion sites or maximum anonymity.
+  # --- Privacy system (preset + flag overrides) ---
+  # Choose a preset for sensible defaults, then override individual flags.
+  # Presets: "standard" (default), "hardened", "paranoid"
+  # Legacy "mode" key is still supported for backwards compatibility.
+  #
   # [params.privacy]
-  #   mode = "standard"
-  #   system_fonts = false  # Use system fonts instead of self-hosted (saves bandwidth)
+  #   preset = "standard"
+  #   system_fonts = false  # Use system fonts instead of self-hosted
+  #
+  # All 21 flags (shown with standard defaults):
+  #   show_author_meta = true          # <meta name="author">
+  #   show_generator = true            # <meta name="generator">
+  #   show_og = true                   # Open Graph meta tags
+  #   show_twitter_cards = true        # Twitter Card meta tags
+  #   show_canonical = true            # <link rel="canonical">
+  #   add_referrer_policy = false      # <meta name="referrer" content="no-referrer">
+  #   add_dns_prefetch_control = false # <meta http-equiv="x-dns-prefetch-control">
+  #   show_person_schema = true        # JSON-LD Person schema on home/about
+  #   show_same_as = true              # sameAs social links in JSON-LD
+  #   show_pgp_in_schema = true        # PGP fingerprint in JSON-LD Person
+  #   show_author_in_posts = true      # author in BlogPosting/CreativeWork JSON-LD
+  #   show_author_in_pages = true      # author in generic page JSON-LD
+  #   show_social_centralized = true   # email, github, linkedin, twitter, signal
+  #   show_social_federated = true     # nostr, mastodon, matrix, xmpp, simplex
+  #   show_pgp_badge = true            # PGP sovereignty badge in footer
+  #   show_nip05_badge = true          # NIP-05 sovereignty badge in footer
+  #   show_theme_credit = true         # "Soberano" theme link in footer
+  #   show_pgp_fingerprint = true      # PGP fingerprint text in footer
+  #   show_rss_generator = true        # <generator> in RSS feed
+  #   show_rss_author = true           # <author>/<managingEditor> in RSS
+  #   show_sitemap_in_robots = true    # Sitemap directive in robots.txt
+  #
+  # Example: Paranoid preset but keep PGP visible (pseudonymous persona):
+  # [params.privacy]
+  #   preset = "paranoid"
+  #   show_pgp_badge = true
+  #   show_pgp_fingerprint = true
+  #
+  # Example: Standard but suppress Twitter Cards:
+  # [params.privacy]
+  #   preset = "standard"
+  #   show_twitter_cards = false
 
   # --- Favicon paths (defaults shown, override if needed) ---
   # favicon_svg = "favicon.svg"

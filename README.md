@@ -9,7 +9,7 @@ A dark, monospace, cypherpunk-inspired Hugo theme for sovereign digital publishi
 - **Dark-first design** — Black background, monospace typography, Bitcoin orange accent
 - **Fully configurable** — All content driven by `hugo.toml` params and menus. No hardcoded pages or links.
 - **Sovereignty features** — Warrant canary, PGP key page, content integrity hashes, mirrors, NIP-05, onion-location
-- **Three-tier privacy** — Standard, hardened, and paranoid modes controlling metadata exposure
+- **Modular privacy** — Preset + flag overrides architecture with 21 granular controls for metadata exposure
 - **Custom shortcodes** — axiom, manifesto, card, callout (info/warning/danger)
 - **Portfolio section** — Project showcase with stack tags, status badges, metadata
 - **Archive page** — Posts grouped by year
@@ -366,25 +366,72 @@ Soberano is a **dark-only theme by design**. The cypherpunk aesthetic is insepar
 
 Override any variable by creating `assets/css/custom.css` in your project.
 
-## Privacy Modes
+## Privacy System
 
-Soberano supports three privacy levels via `params.privacy.mode`:
+Soberano uses a **preset + flag overrides** architecture for privacy control. Choose a preset for sensible defaults, then override individual flags as needed.
 
-| Mode | Generator | OG/Twitter | Canonical | JSON-LD Person | Social Footer | RSS Author |
-|------|-----------|------------|-----------|----------------|---------------|------------|
+### Presets
+
+| Preset | Generator | OG/Twitter | Canonical | JSON-LD Person | Social Footer | RSS Author |
+|--------|-----------|------------|-----------|----------------|---------------|------------|
 | `standard` (default) | Yes | Yes | Yes | Full (sameAs, PGP) | All configured | Yes |
-| `hardened` | No | Yes | Yes | Reduced (no sameAs/PGP) | All configured | Yes |
-| `paranoid` | No | No | No | None (WebSite only) | Pseudonymous/federated only | No |
+| `hardened` | No | Yes | Yes | Reduced (no sameAs/PGP) | All configured | No |
+| `paranoid` | No | No | No | None (WebSite only) | Federated only | No |
 
 ```toml
 [params.privacy]
-  mode = "hardened"       # "standard", "hardened", or "paranoid"
+  preset = "hardened"     # "standard", "hardened", or "paranoid"
   system_fonts = false    # Use system fonts instead of self-hosted WOFF2
 ```
 
-**Hardened mode** adds `no-referrer` and `x-dns-prefetch-control: off` meta tags.
+**Hardened** adds `no-referrer` and `x-dns-prefetch-control: off` meta tags.
 
-**Paranoid mode** strips all identifying metadata. Only pseudonymous/federated networks (Nostr, Matrix, Mastodon, XMPP, SimpleX) appear in the footer. Ideal for `.onion` sites.
+**Paranoid** strips all identifying metadata. Only federated/pseudonymous networks (Nostr, Matrix, Mastodon, XMPP, SimpleX) appear in the footer. Ideal for `.onion` sites.
+
+### Custom Overrides
+
+Override any individual flag to fine-tune privacy beyond what presets offer:
+
+```toml
+# Paranoid preset but keep PGP visible (pseudonymous persona on Tor):
+[params.privacy]
+  preset = "paranoid"
+  show_pgp_badge = true
+  show_pgp_fingerprint = true
+
+# Standard but suppress Twitter Cards:
+[params.privacy]
+  preset = "standard"
+  show_twitter_cards = false
+```
+
+### All Flags
+
+| Flag | standard | hardened | paranoid | Controls |
+|------|----------|----------|----------|----------|
+| `show_author_meta` | true | true | false | `<meta name="author">` and post author display |
+| `show_generator` | true | false | false | `<meta name="generator">` |
+| `show_og` | true | true | false | Open Graph meta tags |
+| `show_twitter_cards` | true | true | false | Twitter Card meta tags |
+| `show_canonical` | true | true | false | `<link rel="canonical">` |
+| `add_referrer_policy` | false | true | true | `<meta name="referrer" content="no-referrer">` |
+| `add_dns_prefetch_control` | false | true | true | `<meta http-equiv="x-dns-prefetch-control">` |
+| `show_person_schema` | true | true | false | JSON-LD Person schema |
+| `show_same_as` | true | false | false | sameAs social links in JSON-LD |
+| `show_pgp_in_schema` | true | false | false | PGP fingerprint in JSON-LD Person |
+| `show_author_in_posts` | true | true | false | author in BlogPosting/CreativeWork JSON-LD |
+| `show_author_in_pages` | true | true | false | author in generic page JSON-LD |
+| `show_social_centralized` | true | true | false | email, github, linkedin, twitter, signal |
+| `show_social_federated` | true | true | true | nostr, mastodon, matrix, xmpp, simplex |
+| `show_pgp_badge` | true | true | false | PGP sovereignty badge in footer |
+| `show_nip05_badge` | true | true | false | NIP-05 sovereignty badge in footer |
+| `show_theme_credit` | true | true | false | "Soberano" theme link in footer |
+| `show_pgp_fingerprint` | true | true | false | PGP fingerprint text in footer |
+| `show_rss_generator` | true | false | false | `<generator>` in RSS feed |
+| `show_rss_author` | true | false | false | `<author>`/`<managingEditor>` in RSS |
+| `show_sitemap_in_robots` | true | true | false | Sitemap directive in robots.txt |
+
+> **Backwards compatibility:** The legacy `mode` key still works as a fallback for `preset`.
 
 ## Security Headers
 
@@ -474,7 +521,7 @@ Soberano outputs no inline styles or scripts that violate CSP. Recommended heade
 
 > **Note on Pagefind:** The CSP above covers Pagefind — `style-src 'self'` allows its CSS, `connect-src 'self'` allows search index fetching, and `worker-src 'self'` allows its Web Workers. No `'unsafe-inline'` needed. Pagefind assets are generated at build time and served from `'self'` — they do not use SRI because their content changes with every build.
 
-> **Note on Referrer-Policy:** The examples above use `strict-origin-when-cross-origin` (browser default). If you enable **hardened** or **paranoid** privacy mode, the theme adds `<meta name="referrer" content="no-referrer">` — consider matching this in your server headers with `Referrer-Policy: no-referrer`.
+> **Note on Referrer-Policy:** The examples above use `strict-origin-when-cross-origin` (browser default). If you enable `add_referrer_policy = true` (default in **hardened** and **paranoid** presets), the theme adds `<meta name="referrer" content="no-referrer">` — consider matching this in your server headers with `Referrer-Policy: no-referrer`.
 
 > **Note on JSON-LD:** Soberano uses inline `<script type="application/ld+json">` for structured data. While `type="application/ld+json"` scripts are **not executable** and pose no XSS risk, strict CSP configurations that block all inline scripts will also block these. If your CSP uses `script-src` without `'unsafe-inline'`, you have two options: (1) add a `nonce` attribute via the `head/custom.html` hook, or (2) compute the SHA-256 hash of each JSON-LD block and add it as `'sha256-<hash>'` to your `script-src` directive.
 
