@@ -1,0 +1,49 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before requesting, please check that the feature aligns with Soberano's principles:
+        zero external dependencies, privacy-first, CSP-compliant, minimal JS.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation
+      description: What problem does this feature solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like it to work?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you've thought about?
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Templates / Layouts
+        - CSS / Styling
+        - JavaScript
+        - SEO / JSON-LD
+        - Accessibility
+        - Privacy / Security
+        - Sovereignty features
+        - i18n / Translations
+        - Documentation
+        - Other
+    validations:
+      required: true
