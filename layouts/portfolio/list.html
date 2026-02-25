@@ -1,5 +1,5 @@
 {{/* layouts/portfolio/list.html */}}
-{{/* Portfolio section list page. Renders project cards in reverse chronological order. */}}
+{{/* Portfolio section list page. Paginated project cards in reverse chronological order. */}}
 
 {{ define "title" }}Portfolio · {{ site.Title }}{{ end }}
 
@@ -12,13 +12,39 @@
   {{ end }}
 </header>
 
-{{/* Projects grid */}}
+{{/* Projects grid — paginated */}}
 {{ if .Pages }}
+{{ $paginator := .Paginate (.Pages.ByDate.Reverse) }}
+
 <div class="portfolio-grid">
-  {{ range .Pages.ByDate.Reverse }}
+  {{ range $paginator.Pages }}
   {{ partial "project-card.html" . }}
   {{ end }}
 </div>
+
+{{/* Pagination nav */}}
+{{ if gt $paginator.TotalPages 1 }}
+<nav class="pagination" aria-label="{{ T "pageNav" }}">
+  <div class="post-nav">
+    {{ if $paginator.HasPrev }}
+    <a href="{{ $paginator.Prev.URL }}" class="post-nav__link" rel="prev">
+      <span class="post-nav__label">{{ T "newer" }}</span>
+    </a>
+    {{ else }}
+    <div></div>
+    {{ end }}
+
+    {{ if $paginator.HasNext }}
+    <a href="{{ $paginator.Next.URL }}" class="post-nav__link post-nav__link--next" rel="next">
+      <span class="post-nav__label">{{ T "older" }}</span>
+    </a>
+    {{ else }}
+    <div></div>
+    {{ end }}
+  </div>
+</nav>
+{{ end }}
+
 {{ else }}
 <p class="text-dim mt-3">{{ T "nothingPublished" }}</p>
 {{ end }}
