@@ -17,7 +17,7 @@
 
   <div class="post-content">
     <div id="search" data-search-unavailable="{{ T "searchUnavailable" }}" data-pagefind-base="{{ "/pagefind/" | relURL }}"></div>
-    <noscript><p>{{ T "searchRequiresJS" }}</p></noscript>
+    <noscript>{{ T "searchRequiresJS" | markdownify }}</noscript>
   </div>
 </article>
 

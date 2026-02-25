@@ -87,15 +87,21 @@
     {{ end }}
     {{ end }}
 
-    {{/* Navigation row — from menu "footer" */}}
-    {{ with site.Menus.footer }}
+    {{/* Navigation row — from menu "footer" + auto-detected archive */}}
+    {{ $archivePage := site.GetPage "/archive" }}
+    {{ if or site.Menus.footer $archivePage }}
     <nav class="site-footer__nav" aria-label="{{ T "footerNav" }}">
-      {{ range $i, $item := . }}
+      {{ range $i, $item := site.Menus.footer }}
         {{ if $i }}<span aria-hidden="true">·</span>{{ end }}
         <a href="{{ .URL | relURL }}"
            {{ if .Params.external }}target="_blank" rel="noopener noreferrer"{{ end }}>
           {{ .Name }}
         </a>
+      {{ end }}
+      {{/* Archive — auto-detected, no menu entry needed */}}
+      {{ with $archivePage }}
+        {{ if site.Menus.footer }}<span aria-hidden="true">·</span>{{ end }}
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       {{ end }}
     </nav>
     {{ end }}
