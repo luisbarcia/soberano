@@ -30,6 +30,8 @@ A dark, monospace, cypherpunk-inspired Hugo theme for sovereign digital publishi
 
 ## Quick Start
 
+For a step-by-step guide from zero to a running site, see **[QUICKSTART.md](QUICKSTART.md)**.
+
 ```bash
 # Create a new Hugo site
 hugo new site mysite
