@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Onion and IPFS footer badges now link to `/mirrors/` page when it exists, improving discoverability of alternative access points
+
 ## [0.2.0] - 2026-02-24
 
 ### Added

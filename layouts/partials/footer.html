@@ -125,19 +125,35 @@
           {{ T "sovereigntyCanary" }}
         </a>
       {{ end }}
-      {{/* Onion */}}
+      {{/* Onion — links to /mirrors/ if available */}}
       {{ with site.Params.sovereignty }}{{ with .onion_url }}
+      {{ $mirrorsPage := site.GetPage "/mirrors" }}
+      {{ if $mirrorsPage }}
+      <a href="{{ $mirrorsPage.RelPermalink }}" class="sovereignty-badge">
+        <span class="sovereignty-badge__dot"></span>
+        {{ T "sovereigntyOnion" }}
+      </a>
+      {{ else }}
       <span class="sovereignty-badge">
         <span class="sovereignty-badge__dot"></span>
         {{ T "sovereigntyOnion" }}
       </span>
+      {{ end }}
       {{ end }}{{ end }}
-      {{/* IPFS */}}
+      {{/* IPFS — links to /mirrors/ if available */}}
       {{ with site.Params.sovereignty }}{{ with .ipfs_cid }}
+      {{ $mirrorsPage := site.GetPage "/mirrors" }}
+      {{ if $mirrorsPage }}
+      <a href="{{ $mirrorsPage.RelPermalink }}" class="sovereignty-badge">
+        <span class="sovereignty-badge__dot"></span>
+        {{ T "sovereigntyIPFS" }}
+      </a>
+      {{ else }}
       <span class="sovereignty-badge">
         <span class="sovereignty-badge__dot"></span>
         {{ T "sovereigntyIPFS" }}
       </span>
+      {{ end }}
       {{ end }}{{ end }}
       {{/* PGP — controlled by show_pgp_badge flag */}}
       {{ if $privacy.show_pgp_badge }}
