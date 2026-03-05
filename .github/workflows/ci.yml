@@ -60,6 +60,7 @@ jobs:
           check_opengraph: true
           check_css: false
           disable_external: true
+          ignore_url_re: /pagefind/
 
       - name: Upload build artifact
         if: github.ref == 'refs/heads/main'
