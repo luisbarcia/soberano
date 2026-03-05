@@ -3,18 +3,34 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "*.md"
+      - "LICENSE"
+      - ".claude/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/FUNDING.yml"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "*.md"
+      - "LICENSE"
+      - ".claude/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/FUNDING.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
+        uses: peaceiris/actions-hugo@75d2e84710de30f6ff7268e08f310b60ef14033f # v3
         with:
           hugo-version: "0.156.0"
           extended: true
@@ -35,18 +51,17 @@ jobs:
           echo "Build OK — $(find public -name '*.html' | wc -l) HTML files generated"
 
       - name: Check HTML validity
-        uses: anishathalye/proof-html@v2
+        uses: anishathalye/proof-html@a76b66427e600c6992e8937a741afffd2264a613 # v2
         with:
           directory: exampleSite/public
           enforce_https: false
           check_external_hash: false
           ignore_empty_alt: false
           check_opengraph: true
-        continue-on-error: true
 
       - name: Upload build artifact
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: site
           path: exampleSite/public/
