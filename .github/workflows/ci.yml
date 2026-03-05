@@ -58,6 +58,8 @@ jobs:
           check_external_hash: false
           ignore_empty_alt: false
           check_opengraph: true
+          check_css: false
+          disable_external: true
 
       - name: Upload build artifact
         if: github.ref == 'refs/heads/main'

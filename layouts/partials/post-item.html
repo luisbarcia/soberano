@@ -3,7 +3,7 @@
 <div class="post-item">
   <a href="{{ .RelPermalink }}" class="post-item__link">
     {{ if .Params.pinned }}
-    <span class="post-item__date post-item__date--pinned" aria-label="{{ T "pinned" }}">▸</span>
+    <span class="post-item__date post-item__date--pinned" role="img" aria-label="{{ T "pinned" }}">▸</span>
     {{ else }}
     <time class="post-item__date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 Jan 2006" }}</time>
     {{ end }}

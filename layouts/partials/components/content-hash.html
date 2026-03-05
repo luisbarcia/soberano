@@ -22,7 +22,7 @@
   {{ end }}
 
   {{ with $hash }}
-  <div class="content-hash" aria-label="{{ T "contentHashAriaLabel" | default "Content integrity hash" }}">
+  <div class="content-hash" role="note" aria-label="{{ T "contentHashAriaLabel" | default "Content integrity hash" }}">
     <div class="content-hash__header">
       <span class="content-hash__label">{{ T "contentHashLabel" }}:</span>
       {{ if eq $mode "signed" }}
