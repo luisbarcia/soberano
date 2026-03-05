@@ -87,20 +87,29 @@
     {{ end }}
     {{ end }}
 
-    {{/* Navigation row — from menu "footer" + auto-detected archive */}}
+    {{/* Navigation row — from menu "footer" + auto-detected pages */}}
     {{ $archivePage := site.GetPage "/archive" }}
-    {{ if or site.Menus.footer $archivePage }}
+    {{ $mirrorsPage := site.GetPage "/mirrors" }}
+    {{ if or site.Menus.footer $archivePage $mirrorsPage }}
     <nav class="site-footer__nav" aria-label="{{ T "footerNav" }}">
-      {{ range $i, $item := site.Menus.footer }}
-        {{ if $i }}<span aria-hidden="true">·</span>{{ end }}
+      {{ $hasItems := false }}
+      {{ range site.Menus.footer }}
+        {{ if $hasItems }}<span aria-hidden="true">·</span>{{ end }}
         <a href="{{ .URL | relURL }}"
            {{ if .Params.external }}target="_blank" rel="noopener noreferrer"{{ end }}>
           {{ .Name }}
         </a>
+        {{ $hasItems = true }}
       {{ end }}
       {{/* Archive — auto-detected, no menu entry needed */}}
       {{ with $archivePage }}
-        {{ if site.Menus.footer }}<span aria-hidden="true">·</span>{{ end }}
+        {{ if $hasItems }}<span aria-hidden="true">·</span>{{ end }}
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ $hasItems = true }}
+      {{ end }}
+      {{/* Mirrors — auto-detected, no menu entry needed */}}
+      {{ with $mirrorsPage }}
+        {{ if $hasItems }}<span aria-hidden="true">·</span>{{ end }}
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       {{ end }}
     </nav>
