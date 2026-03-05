@@ -103,9 +103,13 @@
 
   <title>{{ block "title" . }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
 
-  {{/* Font preloads — eliminate FOIT by preloading critical WOFF2 fonts */}}
+  {{/* Font preloads — eliminate FOUT by preloading all WOFF2 fonts used in the theme */}}
   {{ if not site.Params.privacy.system_fonts }}
   <link rel="preload" href="{{ "fonts/space-mono-v17-latin-regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ "fonts/space-mono-v17-latin-700.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ "fonts/space-mono-v17-latin-italic.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ "fonts/instrument-serif-v5-latin-regular.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ "fonts/instrument-serif-v5-latin-italic.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
   {{ end }}
 
   {{/* CSS — minified + fingerprinted + SRI */}}
